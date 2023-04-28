@@ -1,15 +1,33 @@
 module.exports = {
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-  ],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': 'warn',
+  root: true,
+  env: {
+    browser: true,
+    es6: true,
   },
-}
+  extends: [
+    "prettier",
+    "eslint:recommended",
+  ],
+  plugins: ["@babel", "import"],
+  parserOptions: {
+    parser: "@babel/eslint-parser",
+    requireConfigFile: false,
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 13,
+    sourceType: "module",
+  },
+  rules: {
+    "semi": "error",
+    "prefer-const": "warn",
+    "no-undef": "off",
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "external", ["parent", "sibling"], "index"],
+        "newlines-between": "always"
+      }
+    ],
+  }
+};
