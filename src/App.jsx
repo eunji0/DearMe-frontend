@@ -1,4 +1,4 @@
-import logoSrc from '../src/assets/svg/logoSrc.svg';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './App.css'
 
@@ -6,8 +6,12 @@ function App() {
 
 	return (
 		<>
-			<div>
-				<img src={logoSrc} alt='logo' />
+			<div className='App'>
+				<BrowserRouter>
+				<Routes>
+					<Route path='/detail' element={<DetailPage/>}/>
+				</Routes>
+				</BrowserRouter>
 			</div>
 		</>
 	)
