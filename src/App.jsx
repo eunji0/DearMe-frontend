@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import './App.css'
+import { DetailPage } from './pages/detail/DetailPage';
 
 function App() {
 
@@ -17,4 +17,4 @@ function App() {
 	)
 }
 
-export default App
+export default App;

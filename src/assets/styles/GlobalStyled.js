@@ -11,9 +11,16 @@ export default createGlobalStyle`
       box-sizing : border-box;
     }
     body {
+      margin: 0 200px;
       font-family: "Roboto";
       src: url(${RobotoWoff}) format("woff"),
           url(${RobotoWoff2}) format("woff2"),
           url(${RobotoTtf}) format("truetype");
     }
+    @media only screen and (max-width: 1100px) {
+      * {
+        width: 100%;
+        margin: auto;
+    }
+  }
 `;
