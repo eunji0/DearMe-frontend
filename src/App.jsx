@@ -3,7 +3,8 @@ import './App.css'
 import { DetailPage } from './pages/detail/DetailPage';
 import { MainPage } from './pages/main/MainPage';
 import GlobalStyled from './assets/styles/GlobalStyled';
-import { Header } from './pages/header/header';
+import { Header } from './component/header/header';
+import { Signup } from './pages/sign/signUp';
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
 				<Routes>
 					<Route path='/' element={<MainPage/>}/>
 					<Route path='/detail' element={<DetailPage/>}/>
+					<Route path='/signup' element={<Signup/>}/>
 				</Routes>
 				</BrowserRouter>
 			</div>
