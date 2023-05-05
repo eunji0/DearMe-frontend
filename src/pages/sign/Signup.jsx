@@ -153,6 +153,28 @@ const CheckBox = styled.input`
   }
 `;
 
+const SignBtn = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px 15px;
+gap: 10px;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Orange};
+border-radius: 20px;
+font-style: normal;
+font-weight: 700;
+font-size: 20px;
+line-height: 23px;
+color: ${COLORS.Orange};
+cursor: pointer;
+
+&:active {
+background: ${COLORS.Orange};
+color: ${COLORS.WHITE};
+}
+`
 
 
 export const Signup = () => {
@@ -229,6 +251,7 @@ export const Signup = () => {
               <img alt="개인정보 취급방침 동의" src={infoSrc}/>
             </AgreeTxt>
           </AgreeBox>
+          <SignBtn>회원가입</SignBtn>
         </AgreeLayout>
       </form>
     </div>
