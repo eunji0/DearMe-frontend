@@ -4,6 +4,7 @@ import reset from "styled-reset";
 import RobotoWoff from "../../assets/fonts/Roboto.woff";
 import RobotoWoff2 from "../../assets/fonts/Roboto.woff2";
 import RobotoTtf from "../../assets/fonts/Roboto.ttf";
+import COLORS from "./colors";
 
 export default createGlobalStyle`
 		${reset}
