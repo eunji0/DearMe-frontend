@@ -177,7 +177,7 @@ color: ${COLORS.WHITE};
 `
 
 
-export const Signup = () => {
+const Signup = () => {
 
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -257,3 +257,5 @@ export const Signup = () => {
     </div>
   )
 }
+
+export default Signup;

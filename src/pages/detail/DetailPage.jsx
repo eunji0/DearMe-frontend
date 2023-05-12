@@ -23,7 +23,7 @@ gap: 30px;
 position: relative;
 width: 600px;
 /* height: 728px; */
-background: ${COLORS.Orange}`
+background: ${COLORS.Orange};`
 
 
 const TxtBox = styled.div`
@@ -58,7 +58,7 @@ font-style: normal;
 font-weight: 400;
 font-size: 12px;
 line-height: 14px;
-color: ${COLORS.BLACK}`
+color: ${COLORS.BLACK};`
 
 const MidLayout = styled.div`
 display: flex;
@@ -66,7 +66,7 @@ flex-direction: row;
 justify-content: space-between;
 align-items: center;
 padding: 0px;
-width: 100%`
+width: 100%;`
 
 const ButtonBox = styled.div`
 display: flex;
@@ -109,11 +109,11 @@ font-style: normal;
 font-weight: 600;
 font-size: 14px;
 line-height: 16px;
-color: ${COLORS.BLACK}
+color: ${COLORS.BLACK};
 `
 
 
-export const DetailPage = () => {
+const DetailPage = () => {
 	return (
 		<div>
 			<All>
@@ -164,3 +164,5 @@ export const DetailPage = () => {
 		</div>
 	);
 }
+
+export default DetailPage;

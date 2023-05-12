@@ -47,7 +47,7 @@ gap: 10px;
 height: 50px;
 `
 
-export const Header = () => {
+const Header = () => {
 	return (
 			<All>
 				<Link to="/">
@@ -71,3 +71,5 @@ export const Header = () => {
 			</All>
 	)
 } 
+
+export default Header;
