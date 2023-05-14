@@ -176,6 +176,10 @@ color: ${COLORS.WHITE};
 }
 `
 
+const OkBtn = styled.button`
+
+`
+
 
 const Signup = () => {
 
@@ -192,7 +196,7 @@ const Signup = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form>
         <SignBox>
           <SignDiv>
             <TxtDiv>회원가입</TxtDiv>
@@ -251,7 +255,7 @@ const Signup = () => {
               <img alt="개인정보 취급방침 동의" src={infoSrc}/>
             </AgreeTxt>
           </AgreeBox>
-          <SignBtn>회원가입</SignBtn>
+          <SignBtn type="submit"  onSubmit={handleSubmit}>회원가입</SignBtn>
         </AgreeLayout>
       </form>
     </div>
