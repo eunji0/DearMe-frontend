@@ -7,7 +7,7 @@ import { Header } from './component/header/header';
 import { Signup } from './pages/sign/Signup';
 import { Login } from './pages/sign/Login';
 import  Dakku  from './pages/timecapsule/dakku';
-import Da from './pages/timecapsule/da';
+
 
 function App() {
 
@@ -23,7 +23,7 @@ function App() {
 					<Route path='/signup' element={<Signup/>}/>
 					<Route path='/login' element={<Login/>}/>
 					<Route path='/dakku' element={<Dakku/>}/>
-					<Route path='/da' element={<Da />}/>
+					
 				</Routes>
 				</BrowserRouter>
 			</div>

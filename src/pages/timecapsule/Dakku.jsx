@@ -257,10 +257,29 @@ background: ${COLORS.WHITE};
 
 const Dakku = () => {
   const [dcloud, setdcloud] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleDragStart = (event, source) => {
-    event.dataTransfer.setData("source", source);
+  const handleDragStart = (event) => {
+    const { offsetX, offsetY } = event.nativeEvent;
+    setDragging(true);
+    setPosition({ x: offsetX, y: offsetY });
   };
+
+  const handleDrag = (event) => {
+    if (dragging) {
+      const { clientX, clientY } = event;
+      const parentRect = event.target.parentNode.getBoundingClientRect();
+      const x = clientX - parentRect.left - position.x;
+      const y = clientY - parentRect.top - position.y;
+      setPosition({ x, y });
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDragging(false);
+  };
+
 
   return (
     <DakkuPage>
@@ -296,13 +315,13 @@ const Dakku = () => {
               <Dakkusetbutton1>20xx.xx.xx</Dakkusetbutton1>
               <Dakkusetbutton2>Delete</Dakkusetbutton2>
             </DakkusetbuttonDiv>
-            <Diaryimg2Div>
-              <Diaryname2Div>
-              {
-                dcloud===true ? <img alt="cloud" src={cloudSrc}/> : <div></div>
-              }
-                
-              </Diaryname2Div>
+            <Diaryimg2Div>   
+              onDragStart={handleDragStart}
+              onDrag={handleDrag}
+              onDragEnd={handleDragEnd}
+              style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+              <img alt="cloud" src={cloudSrc} />
+              {dcloud===true ? <img alt="cloud" src={cloudSrc}/> : <div></div>}
             </Diaryimg2Div>
             <Dakkusetbuttondiv2>
               <Dakkusetbutton3>Save</Dakkusetbutton3>
@@ -311,7 +330,12 @@ const Dakku = () => {
           <Dakkuzonediv>
             <Dakkustickerline>
               <Dakkusticker 
-              onClick={()=>setdcloud(!dcloud)} src={cloudSrc}>
+              draggable
+              onDragStart={(event)=> handleDragStart(event,cloudSrc)}
+              src={cloudSrc}
+              alt="cloud"
+            
+              onClick={()=>setdcloud(!dcloud)}>
                 
               </Dakkusticker>
               <Dakkusticker src={heartSrc}></Dakkusticker>

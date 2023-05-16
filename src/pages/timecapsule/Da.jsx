@@ -1,44 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import COLORS from "../../assets/styles/colors";
 
-const All = styled.div`
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 70px 10px;
-gap: 10px;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 300px;
+  background-color: lightgray;
+`;
 
-width: 1200px;
-height: 667.74px;
-
-background: ${COLORS.WHITE};`
-
-const Layout = styled.div`
-display: flex;
-flex-direction: row;
-justify-content: center;
-align-items: center;
-padding: 0px 10px;
-gap: 40px;
-
-width: 1180px;
-height: 527.74px;
-
-background: #FFC876;
-`
-
+const DraggableItem = styled.div`
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+  cursor: grab;
+`;
 
 const Da = () => {
-    return(
-        <div>
-            <All>
-                <Layout>
-                    
-                </Layout>
-            </All>
-        </div>
-    )
-}
+  const [dragging, setDragging] = useState(false);
 
-export default Da;
+  const handleDragStart = (event) => {
+    event.dataTransfer.setData("text/plain", event.target.id);
+    setDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const data = event.dataTransfer.getData("text/plain");
+    console.log("Dropped item:", data);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  return (
+    <Container
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      <DraggableItem
+        id="draggableItem"
+        draggable={!dragging}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      />
+    </Container>
+  );
+};
+
+export default DragAndDropExample;
