@@ -12,15 +12,15 @@ function App() {
 	return (
 		<>
 			<div className='App'>
-				<GlobalStyled/>
+				<GlobalStyled />
 				<BrowserRouter>
-				<Header/>
-				<Routes>
-					<Route path='/' element={<MainPage/>}/>
-					<Route path='/detail' element={<DetailPage />}/>
-					<Route path='/signup' element={<Signup/>}/>
-					<Route path='/timecapsules' element={<TimeCapsules/>}/>
-				</Routes>
+					<Header />
+					<Routes>
+						<Route path='/' element={<MainPage />} />
+						<Route path='/detail' element={<DetailPage />} />
+						<Route path='/signup' element={<Signup />} />
+						<Route path='/timecapsules' element={<TimeCapsules />} />
+					</Routes>
 				</BrowserRouter>
 			</div>
 		</>
