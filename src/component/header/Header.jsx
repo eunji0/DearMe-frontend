@@ -4,6 +4,7 @@ import COLORS from "../../assets/styles/colors";
 import logoSrc from "../../assets/svg/logo.svg";
 import alarmSrc from "../../assets/svg/alarm.svg";
 import myProfileSrc from "../../assets/svg/myProfile.svg";
+import { Link } from "react-router-dom";
 
 
 const All = styled.div`
@@ -46,12 +47,12 @@ gap: 10px;
 height: 50px;
 `
 
-export const Header = () => {
+const Header = () => {
 	return (
 			<All>
-				<div>
+				<Link to="/">
 					<img alt="logo" src={logoSrc}/>
-				</div>
+				</Link>
 				<div>
 					<MiddleBox>
 						<MiddleTxt>OO's DearMe</MiddleTxt>
@@ -59,9 +60,9 @@ export const Header = () => {
 				</div>
 				<div>
 					<MyPageBox>
-						<div>
+						<Link to="/notice">
 							<img alt="alarm" src={alarmSrc}/>
-						</div>
+						</Link>
 						<div>
 							<img alt="myProfile" src={myProfileSrc}/>
 						</div>
@@ -70,3 +71,5 @@ export const Header = () => {
 			</All>
 	)
 } 
+
+export default Header;

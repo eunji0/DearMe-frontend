@@ -176,8 +176,12 @@ color: ${COLORS.WHITE};
 }
 `
 
+const OkBtn = styled.button`
 
-export const Signup = () => {
+`
+
+
+const Signup = () => {
 
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -192,7 +196,7 @@ export const Signup = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form>
         <SignBox>
           <SignDiv>
             <TxtDiv>회원가입</TxtDiv>
@@ -251,9 +255,11 @@ export const Signup = () => {
               <img alt="개인정보 취급방침 동의" src={infoSrc}/>
             </AgreeTxt>
           </AgreeBox>
-          <SignBtn>회원가입</SignBtn>
+          <SignBtn type="submit"  onSubmit={handleSubmit}>회원가입</SignBtn>
         </AgreeLayout>
       </form>
     </div>
   )
 }
+
+export default Signup;

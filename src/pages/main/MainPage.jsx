@@ -1,9 +1,11 @@
 import React from "react";
 
-export const MainPage=()=>{
+const MainPage=()=>{
   return(
     <div>
       main
     </div>
   )
 }
+
+export default MainPage;
