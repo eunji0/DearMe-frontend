@@ -60,9 +60,9 @@ const Header = () => {
 				</div>
 				<div>
 					<MyPageBox>
-						<div>
+						<Link to="/notice">
 							<img alt="alarm" src={alarmSrc}/>
-						</div>
+						</Link>
 						<div>
 							<img alt="myProfile" src={myProfileSrc}/>
 						</div>
