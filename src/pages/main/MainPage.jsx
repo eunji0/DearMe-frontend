@@ -25,7 +25,7 @@ display: flex;
 flex-direction: row;
 justify-content: space-between;
 align-items: flex-end;
-padding: 10px 30px;
+padding: 10px 30px 30px;
 gap: 10px;
 width: 100%;`
 
@@ -80,6 +80,7 @@ padding: 5px 5px 10px;
 gap: 2px;
 width: 140px;
 height: 117px;
+border-radius: 5px;
 border: 2px solid ${COLORS.Light_Orange};
 `
 
@@ -97,12 +98,25 @@ font-size: 16px;
 line-height: 19px;
 color: ${COLORS.BLACK};`
 
+const List = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: left;
+align-items: center;
+padding: 5px 10px;
+width: 100%;
+overflow: hidden;
+height: 24px;
+background: ${COLORS.Orange};
+border-radius: 5px;
+`
+
 const MainPage = () => {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const startHour = 0;
   const endHour = 24;
   const [weeklyDates, setWeeklyDates] = useState([]);
-
+  const [scheduleData, setScheduleData] = useState({});
   const containerRef = useRef(null);
 
   // 주간 날짜 범위 계산
@@ -138,6 +152,7 @@ const MainPage = () => {
     }
   }, []);
 
+  //높이값
   const scrollContainerHeight = Math.floor((window.innerHeight * 3) / 4);
 
   const goToPreviousWeek = () => {
@@ -169,6 +184,42 @@ const MainPage = () => {
   };
 
 
+  useEffect(() => {
+
+    const fetchScheduleData = () => {
+      const dummyScheduleData = {
+        '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
+        '2023-05-22': ['Task 1', 'Task 2'], // 월요일
+        '2023-05-23': ['Appointment'], // 화요일
+        '2023-05-24': [], // 수요일
+        '2023-05-25': ['Event'], // 목요일
+        '2023-05-26': ['Project'], // 금요일
+        '2023-05-27': ['Task 3'], // 토요일
+        '2023-05-28': ['Task 3'], // 다음주
+      };
+
+      // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
+      // const filteredScheduleData = Object.keys(dummyScheduleData).reduce((result, date) => {
+      //   if (weeklyDates.some((weekDate) => weekDate.toISOString().slice(0, 10) === date)) {
+      //     result[date] = dummyScheduleData[date];
+      //   }
+      //   return result;
+      // }, {});
+       const filteredScheduleData = Object.keys(dummyScheduleData).reduce((result, date) => {
+        if (weeklyDates.some((weekDate) => weekDate.toISOString().slice(0, 10) === date)) {
+          result[date] = dummyScheduleData[date];
+        }
+        return result;
+      }, {});
+
+      setScheduleData(filteredScheduleData);
+    };
+
+    fetchScheduleData();
+
+  }, [weeklyDates]);
+
+
   return (
     <div style={{ marginBottom: "50px" }}>
       <TitleBox>
@@ -181,8 +232,8 @@ const MainPage = () => {
           </DateBox>
         )}
         <BtnBox>
-          <img alt="previous" src={leftSrc} onClick={goToPreviousWeek}/>
-          <img alt="next" src={rightSrc} onClick={goToNextWeek}/>
+          <img alt="previous" src={leftSrc} onClick={goToPreviousWeek} />
+          <img alt="next" src={rightSrc} onClick={goToNextWeek} />
         </BtnBox>
       </BtnLayout>
       <div>
@@ -196,22 +247,27 @@ const MainPage = () => {
         ))}
       </WeekLayout>
 
-      <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }}
-        ref={containerRef}>
+      <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
           {/* 9시부터 17시까지 표시 */}
-          {[...Array(endHour - startHour + 1)].map((_, index) => {
-            const hour = startHour + index;
+          {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
+            const hour = startHour + hourIndex;
             return (
               <div key={hour} style={{ display: 'flex' }}>
                 <HourBox style={{ flex: 1, textAlign: 'center' }}>
                   {hour}:00
                 </HourBox>
-                {daysOfWeek.map((day) => (
-                  <ListBox key={`${day}-${hour}`}>
-                    {/* 일자별로 해당 시간의 일정 등을 표시 */}
-                  </ListBox>
-                ))}
+                {daysOfWeek.map((day, dayIndex) => {
+                  const date = weeklyDates[dayIndex] ? weeklyDates[dayIndex].toISOString().slice(0, 10) : null;
+                  const daySchedule = date && scheduleData[date] ? scheduleData[date] : [];
+                  return (
+                    <ListBox className="abc" key={`${day}-${hour}`}>
+                      {daySchedule.map((schedule) => (
+                        <List key={schedule}>{schedule}</List>
+                      ))}
+                    </ListBox>
+                  );
+                })}
               </div>
             );
           })}

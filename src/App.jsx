@@ -8,6 +8,9 @@ import DetailPage from './pages/detail/DetailPage';
 import TimeCapsules from './pages/timecapsule/TimeCapsules';
 import Noticed from './pages/mypage/Noticed';
 import SideBar from './component/SideBar';
+import Login from './pages/sign/Login';
+import Dakku from './pages/timecapsule/dakku';
+import Da from './pages/timecapsule/da';
 
 function App() {
 
@@ -22,9 +25,11 @@ function App() {
 						<Route path='/detail' element={<DetailPage />} />
 						<Route path='/signup' element={<Signup />} />
 						<Route path='/timecapsules' element={<TimeCapsules />} />
-
+						<Route path='/login' element={<Login />} />
+						<Route path='/dakku' element={<Dakku />} />
+						<Route path='/da' element={<Da />} />
 						<Route element={<MypageLayout />}>
-              <Route path="/notice" element={<Noticed />} />
+							<Route path="/notice" element={<Noticed />} />
 						</Route>
 					</Routes>
 				</BrowserRouter>
@@ -36,10 +41,10 @@ function App() {
 export default App;
 
 const MypageLayout = () => {
-  return (
-    <div style={{display: "flex", flexDirection:"row"}}>
-      <SideBar />
-          {<Outlet />}
-    </div>
-  )
+	return (
+		<div style={{ display: "flex", flexDirection: "row" }}>
+			<SideBar />
+			{<Outlet />}
+		</div>
+	)
 }
