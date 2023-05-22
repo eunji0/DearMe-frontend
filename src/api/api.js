@@ -1,0 +1,1 @@
+export const BaseUrl = "http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80"

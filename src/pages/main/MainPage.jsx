@@ -4,6 +4,9 @@ import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/mainLeft.svg";
 import rightSrc from "../../assets/svg/mainRight.svg";
 import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import DetailPage from "../detail/DetailPage";
+import axios from "axios";
 
 const TitleBox = styled.div`
 display: flex;
@@ -111,31 +114,53 @@ background: ${COLORS.Orange};
 border-radius: 5px;
 `
 
+const LinkStyle = styled(Link)`
+text-decoration: none;`
+
+const SlidePage = styled.div`
+  position: fixed;
+  top: 0;
+  right: ${({ open }) => (open ? '0' : '-100%')};
+  bottom: 0;
+  width: 705px;
+  height: 100vh;
+  z-index: 100;
+  background-color: ${COLORS.Orange};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: right 0.3s ease-in-out;
+`;
+
+
 const MainPage = () => {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const startHour = 0;
-  const endHour = 24;
   const [weeklyDates, setWeeklyDates] = useState([]);
   const [scheduleData, setScheduleData] = useState({});
   const containerRef = useRef(null);
+  const [detailOn, setDetailOn] = useState(false);
+  const startHour = 0;
+  const endHour = 24;
 
-  // 주간 날짜 범위 계산
+  const handleDetailPageClose = () => {
+    setDetailOn(false);
+  };
+
   useEffect(() => {
     const calculateWeeklyDates = () => {
       const currentDate = new Date();
       const startOfWeek = new Date(
-        currentDate.setDate(currentDate.getDate() - currentDate.getDay())
-      );
-      const endOfWeek = new Date(
-        currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6)
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate() - currentDate.getDay()
       );
 
+      const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
       const dates = [];
-      let currentDay = startOfWeek;
+      let currentDay = new Date(startOfWeek);
       while (currentDay <= endOfWeek) {
         dates.push(new Date(currentDay));
         currentDay.setDate(currentDay.getDate() + 1);
       }
+
 
       setWeeklyDates(dates);
     };
@@ -143,82 +168,75 @@ const MainPage = () => {
     calculateWeeklyDates();
   }, []);
 
-  console.log(weeklyDates);
-
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      container.scrollTop = container.scrollHeight / 2.78; // 처음에 스크롤을 9시 위치로 이동
+      container.scrollTop = container.scrollHeight / 2.78;
     }
   }, []);
 
-  //높이값
   const scrollContainerHeight = Math.floor((window.innerHeight * 3) / 4);
 
-  const goToPreviousWeek = () => {
-    const previousWeekStartDate = new Date(weeklyDates[0]);
-    previousWeekStartDate.setDate(previousWeekStartDate.getDate() - 7);
+  const goToWeek = (offset) => {
+    const newWeekStartDate = new Date(weeklyDates[0]);
+    newWeekStartDate.setDate(newWeekStartDate.getDate() + offset * 7);
 
-    const previousWeekDates = [];
-    let currentDay = new Date(previousWeekStartDate);
+    const newWeekDates = [];
+    let currentDay = new Date(newWeekStartDate);
     for (let i = 0; i < 7; i++) {
-      previousWeekDates.push(new Date(currentDay));
+      newWeekDates.push(new Date(currentDay));
       currentDay.setDate(currentDay.getDate() + 1);
     }
 
-    setWeeklyDates(previousWeekDates);
+    setWeeklyDates(newWeekDates);
   };
 
-  const goToNextWeek = () => {
-    const nextWeekStartDate = new Date(weeklyDates[0]);
-    nextWeekStartDate.setDate(nextWeekStartDate.getDate() + 7);
+  // const fetchScheduleData = async () => {
+  //   try {
+  //     const response = await axios.get('http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timecapsule/12');
+  //     const dummyScheduleData = response.data;
+  //     const filteredScheduleData = {};
 
-    const nextWeekDates = [];
-    let currentDay = new Date(nextWeekStartDate);
-    for (let i = 0; i < 7; i++) {
-      nextWeekDates.push(new Date(currentDay));
-      currentDay.setDate(currentDay.getDate() + 1);
-    }
+  //     Object.keys(dummyScheduleData).forEach(date => {
+  //       if (weeklyDates.some(weekDate => weekDate.toISOString().slice(0, 10) === date)) {
+  //         filteredScheduleData[date] = dummyScheduleData[date];
+  //       }
+  //     });
 
-    setWeeklyDates(nextWeekDates);
+  //     setScheduleData(filteredScheduleData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const fetchScheduleData = () => {
+    // 더미 일정 데이터
+    const dummyScheduleData = {
+      '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
+      '2023-05-22': ['Task 1', 'Task 2'], // 월요일
+      '2023-05-23': ['Appointment'], // 화요일
+      '2023-05-24': [], // 수요일
+      '2023-05-25': ['Event'], // 목요일
+      '2023-05-26': ['Project'], // 금요일
+      '2023-05-27': ['Task 3'], // 토요일
+      '2023-05-28': ['Task 3'], // 다음주
+    };
+  
+    // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
+    const filteredScheduleData = weeklyDates.reduce((result, date) => {
+      const formattedDate = date.toISOString().slice(0, 10);
+      result[formattedDate] = dummyScheduleData[formattedDate] || [];
+      return result;
+    }, {});
+  
+    setScheduleData(filteredScheduleData);
   };
+  
 
 
   useEffect(() => {
-
-    const fetchScheduleData = () => {
-      const dummyScheduleData = {
-        '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
-        '2023-05-22': ['Task 1', 'Task 2'], // 월요일
-        '2023-05-23': ['Appointment'], // 화요일
-        '2023-05-24': [], // 수요일
-        '2023-05-25': ['Event'], // 목요일
-        '2023-05-26': ['Project'], // 금요일
-        '2023-05-27': ['Task 3'], // 토요일
-        '2023-05-28': ['Task 3'], // 다음주
-      };
-
-      // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
-      // const filteredScheduleData = Object.keys(dummyScheduleData).reduce((result, date) => {
-      //   if (weeklyDates.some((weekDate) => weekDate.toISOString().slice(0, 10) === date)) {
-      //     result[date] = dummyScheduleData[date];
-      //   }
-      //   return result;
-      // }, {});
-       const filteredScheduleData = Object.keys(dummyScheduleData).reduce((result, date) => {
-        if (weeklyDates.some((weekDate) => weekDate.toISOString().slice(0, 10) === date)) {
-          result[date] = dummyScheduleData[date];
-        }
-        return result;
-      }, {});
-
-      setScheduleData(filteredScheduleData);
-    };
-
     fetchScheduleData();
-
   }, [weeklyDates]);
-
 
   return (
     <div style={{ marginBottom: "50px" }}>
@@ -232,12 +250,11 @@ const MainPage = () => {
           </DateBox>
         )}
         <BtnBox>
-          <img alt="previous" src={leftSrc} onClick={goToPreviousWeek} />
-          <img alt="next" src={rightSrc} onClick={goToNextWeek} />
+          <img alt="previous" src={leftSrc} onClick={() => goToWeek(-1)} />
+          <img alt="next" src={rightSrc} onClick={() => goToWeek(1)} />
         </BtnBox>
       </BtnLayout>
-      <div>
-      </div>
+      <div></div>
       <WeekLayout>
         <div style={{ flex: 1, textAlign: 'center' }} />
         {daysOfWeek.map((day) => (
@@ -249,7 +266,6 @@ const MainPage = () => {
 
       <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
-          {/* 9시부터 17시까지 표시 */}
           {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
             const hour = startHour + hourIndex;
             return (
@@ -258,10 +274,10 @@ const MainPage = () => {
                   {hour}:00
                 </HourBox>
                 {daysOfWeek.map((day, dayIndex) => {
-                  const date = weeklyDates[dayIndex] ? weeklyDates[dayIndex].toISOString().slice(0, 10) : null;
-                  const daySchedule = date && scheduleData[date] ? scheduleData[date] : [];
+                  const date = weeklyDates[dayIndex+1]?.toISOString().slice(0, 10) || null;
+                  const daySchedule = scheduleData[date] || [];
                   return (
-                    <ListBox className="abc" key={`${day}-${hour}`}>
+                    <ListBox onClick={() => setDetailOn(!detailOn)} key={`${day}-${hour}`}>
                       {daySchedule.map((schedule) => (
                         <List key={schedule}>{schedule}</List>
                       ))}
@@ -273,6 +289,11 @@ const MainPage = () => {
           })}
         </div>
       </div>
+      {detailOn && (
+  <SlidePage open={detailOn} className={detailOn ? "slide-in" : "slide-out"}>
+    <DetailPage onClose={handleDetailPageClose} />
+  </SlidePage>
+)}
     </div>
   );
 };

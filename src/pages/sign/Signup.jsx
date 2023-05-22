@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
+import {BaseUrl} from "../../api/api";
+import axios from 'axios';
+
 
 const SignBox = styled.div`
 display: flex;
@@ -176,13 +179,9 @@ color: ${COLORS.WHITE};
 }
 `
 
-const OkBtn = styled.button`
-
-`
 
 
 const Signup = () => {
-
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -190,13 +189,11 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(`Username: ${username}, Password: ${password}`);
   };
-
 
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <SignBox>
           <SignDiv>
             <TxtDiv>회원가입</TxtDiv>
@@ -231,8 +228,8 @@ const Signup = () => {
             <InnerBox>
               <TitleBox>전화번호 :</TitleBox>
               <InBox
-                type="number"
-                id="number"
+                type="tel"
+                id="tel"
                 value={number}
                 onChange={(e) => setNumber(e.target.value)} />
             </InnerBox>
@@ -255,7 +252,7 @@ const Signup = () => {
               <img alt="개인정보 취급방침 동의" src={infoSrc}/>
             </AgreeTxt>
           </AgreeBox>
-          <SignBtn type="submit"  onSubmit={handleSubmit}>회원가입</SignBtn>
+          <SignBtn type="submit" onSubmit={handleSubmit}>회원가입</SignBtn>
         </AgreeLayout>
       </form>
     </div>

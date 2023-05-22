@@ -3,6 +3,7 @@ import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
+import backSrc from "../../assets/svg/back.svg";
 
 const InBox = styled.div`
 display: flex;
@@ -11,19 +12,19 @@ align-items: flex-start;
 padding: 10px;
 gap: 15px;
 width: 100%;
+border-left: 1px solid ${COLORS.Orange};
 `
 
 const All = styled.div`
-margin-top: 50px;
 display: flex;
 flex-direction: column;
+justify-content: space-between;
 align-items: flex-start;
-padding: 10px;
-gap: 30px;
+padding: 20px;
 position: relative;
-width: 600px;
-/* height: 728px; */
-background: ${COLORS.Orange};`
+background-color: ${COLORS.Orange};
+width: 705px;
+height: 100%;`
 
 
 const TxtBox = styled.div`
@@ -112,12 +113,16 @@ line-height: 16px;
 color: ${COLORS.BLACK};
 `
 
+const BackLayout = styled.div`
+width:100%;
+`
 
-const DetailPage = () => {
+
+const DetailPage = ({ onClose }) => {
 	return (
-		<div>
 			<All>
-				<InBox>
+				<img alt="back" src={backSrc} onClick={onClose}/>
+				<InBox style={{paddingBottom: "50px"}}>
 					<TxtBox>
 						<TxtDiv>To me today</TxtDiv>
 					</TxtBox>
@@ -127,7 +132,7 @@ const DetailPage = () => {
 						</InTxt>
 					</TodayBox>
 				</InBox>
-				<InBox>
+				<InBox style={{height: "70%"}}>
 					<MidLayout>
 						<TxtBox>
 							<TxtDiv>2023/04/24</TxtDiv>
@@ -137,7 +142,7 @@ const DetailPage = () => {
 							<img alt="right" src={rightSrc} />
 						</ButtonBox>
 					</MidLayout>
-					<TodayBox>
+					<TodayBox style={{minHeight: "70%"}}>
 						<ContentBox></ContentBox>
 						<ContentBox></ContentBox>
 						<ContentBox></ContentBox>
@@ -161,7 +166,6 @@ const DetailPage = () => {
 					</SaveDiv>
 				</InBox>
 			</All>
-		</div>
 	);
 }
 
