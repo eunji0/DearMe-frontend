@@ -31,7 +31,7 @@ font-style: normal;
 font-weight: 700;
 font-size: 20px;
 line-height: 23px;
-color: ${COLORS.BLACK};
+color: ${COLORS.Orange};
 `
 
 const InputBox = styled.div`
@@ -105,7 +105,7 @@ align-items: flex-start;
 padding: 20px 30px;
 gap: 10px;
 width: 660px;
-background: ${COLORS.Light_Orange};`
+background: ${COLORS.Orange};`
 
 const AgreeTxt = styled.div`
 display: flex;
@@ -181,7 +181,7 @@ const OkBtn = styled.button`
 `
 
 
-const Signup = () => {
+const Profile = () => {
 
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -199,7 +199,7 @@ const Signup = () => {
       <form>
         <SignBox>
           <SignDiv>
-            <TxtDiv>회원가입</TxtDiv>
+            <TxtDiv>프로필 수정</TxtDiv>
           </SignDiv>
         </SignBox>
         <InputBox>
@@ -237,29 +237,11 @@ const Signup = () => {
                 onChange={(e) => setNumber(e.target.value)} />
             </InnerBox>
           </InputLayout>
+          <SignBtn type="submit"  onSubmit={handleSubmit}>저장</SignBtn>
         </InputBox>
-        <AgreeLayout>
-          <AgreeBox>
-            <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
-              모두 동의합니다.
-            </AgreeTxt>
-            <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
-              이용약관 동의
-              <img alt="이용약관 동의" src={infoSrc}/>
-            </AgreeTxt>
-            <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
-              개인정보 취급방침 동의
-              <img alt="개인정보 취급방침 동의" src={infoSrc}/>
-            </AgreeTxt>
-          </AgreeBox>
-          <SignBtn type="submit"  onSubmit={handleSubmit}>회원가입</SignBtn>
-        </AgreeLayout>
       </form>
     </div>
   )
 }
 
-export default Signup;
+export default Profile;

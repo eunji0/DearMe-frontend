@@ -19,6 +19,7 @@ import starSrc from "../../assets/svg/star.svg";
 import trashSrc from "../../assets/svg/trash.svg";
 import tvSrc from "../../assets/svg/tv.svg";
 
+
 const DiarybigDiv = styled.div`
 display: flex;
 flex-direction: column;
@@ -38,7 +39,7 @@ padding: 70px 10px;
 gap: 10px;
 height: 1500px
 width: 1700px;
-background: ${COLORS.Orange};
+;
 `
 const DiaryBox = styled.div`
 display: flex;
@@ -60,7 +61,7 @@ padding: 10px 10px;
 gap: 40px;
 width: 1680px;
 height: 750.74px;
-background: ${COLORS.Orange};
+;
 `
 const DiaryimgDiv = styled.div`
 display: flex;
@@ -72,7 +73,14 @@ width: 300px;
 height: 430px;
 background: ${COLORS.Light_Orange};
 `
+const Button = styled.button`
+  width: 100px;
+  height: 40px;
+  margin-right: 10px;
+`;
+
 const Diaryimg2Div = styled.div`
+margin-top: 20px;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -80,8 +88,157 @@ padding: 50px 30px;
 gap: 30px;
 width: 500px;
 height: 730px;
-background: ${COLORS.Light_Orange};
+background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
+const DiaryimgstickerDiv = styled.div`
+width: 200px;
+height: 400px;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+background-color: transparent;
+`
+
+const Buttonbox = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px;
+gap: 40px;
+width: 566px;
+height: 70px;
+
+`
+
+const PinkColorbutton = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+width: 50px;
+height: 50px;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 18px;
+background: ${COLORS.PINK};
+border-radius: 50px;
+gap: 30px;
+
+&:active {
+  background: ${COLORS.WHITE};
+  }
+`
+
+const BlueColorbutton = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+width: 50px;
+height: 50px;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 18px;
+background: ${COLORS.BLUE};
+border-radius: 50px;
+gap: 30px;
+
+&:active {
+  background: ${COLORS.WHITE};
+  }
+`
+const PurpleColorbutton = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+width: 50px;
+height: 50px;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 18px;
+background: ${COLORS.PURPLE};
+border-radius: 50px;
+gap: 30px;
+
+&:active {
+  background: ${COLORS.WHITE};
+  }
+`
+const GrayColorbutton = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+width: 50px;
+height: 50px;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 18px;
+background: ${COLORS.GRAY};
+border-radius: 50px;
+gap: 30px;
+
+&:active {
+  background: ${COLORS.WHITE};
+  }
+`
+const YellowColorbutton = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+width: 50px;
+height: 50px;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 18px;
+background: ${COLORS.Light_Orange};
+border-radius: 50px;
+gap: 30px;
+
+&:active {
+  background: ${COLORS.WHITE};
+  }
+`
+
+
+const Buttontxt = styled.div`
+width: 58px;
+height: 19px;
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+justify-content: center;
+color: ${COLORS.BLACK};
+
+&:active {
+  color: ${COLORS.Orange};
+  }
+`
+const TextInput = styled.input`
+width: 350px;
+height: 80px;
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 700;
+font-size: 40px;
+display: flex;
+align-items: center;
+text-align: center;
+justify-content: center;
+color: ${COLORS.Black};
+background-color: transparent;
+`
+
 const DiaryDiv = styled.div`
 display: flex;
 flex-direction: column;
@@ -112,7 +269,6 @@ background: ${COLORS.WHITE};
 const Diaryname2Div = styled.div`
 width: 350px;
 height: 80px;
-padding: 10px;
 background: ${COLORS.WHITE};
 `
 const Dakkusetbuttondiv2 = styled.div`
@@ -257,29 +413,41 @@ background: ${COLORS.WHITE};
 
 const Dakku = () => {
   const [dcloud, setdcloud] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dheart, setdheart] = useState(false);
+  const [dstar, setdstar] = useState(false);
+  const [dtv, setdtv] = useState(false);
+  const [dcalender, setdcalender] = useState(false);
 
-  const handleDragStart = (event) => {
-    const { offsetX, offsetY } = event.nativeEvent;
-    setDragging(true);
-    setPosition({ x: offsetX, y: offsetY });
+  const [dtrash, setdtrash] = useState(false);
+  const [dlock, setdlock] = useState(false);
+  const [dkey, setdkey] = useState(false);
+  const [dsearch, setdsearch] = useState(false);
+  const [dsetting, setdsetting] = useState(false);
+
+  const [dhat, setdhat] = useState(false);
+  const [dlike, setdlike] = useState(false);
+  const [ddia, setddia] = useState(false);
+  const [dmoney, setdmoney] = useState(false);
+  const [dmusic, setdmusic] = useState(false);
+
+  const [backgroundColor, setBackgroundColor] = useState("");
+  const [inputText, setInputText] = useState("");
+  const maxCharacters = 10;
+
+  const handleButtonClick = (color) => {
+    setBackgroundColor(color);
   };
 
-  const handleDrag = (event) => {
-    if (dragging) {
-      const { clientX, clientY } = event;
-      const parentRect = event.target.parentNode.getBoundingClientRect();
-      const x = clientX - parentRect.left - position.x;
-      const y = clientY - parentRect.top - position.y;
-      setPosition({ x, y });
+  const handleInputChange = (event) => {
+    const text = event.target.value;
+    if (text.length <= maxCharacters) {
+      setInputText(text);
     }
   };
 
-  const handleDragEnd = () => {
-    setDragging(false);
+  const handleDragStart = (event, source) => {
+    event.dataTransfer.setData("source", source);
   };
-
 
   return (
     <DakkuPage>
@@ -304,60 +472,94 @@ const Dakku = () => {
                 </DiarynameDiv>
               </DiaryimgDiv>
             </DiaryDiv>
-            <CheckBox><img alt="이용약관 동의" src={infoSrc}/></CheckBox>
+            <CheckBox></CheckBox>
           </DiaryBox>
         </DiarybigDiv>
 
         <DakkubigDiv>
           <DiaryBox2>
-          <DakkusetDiv>
-            <DakkusetbuttonDiv>
-              <Dakkusetbutton1>20xx.xx.xx</Dakkusetbutton1>
-              <Dakkusetbutton2>Delete</Dakkusetbutton2>
-            </DakkusetbuttonDiv>
-            <Diaryimg2Div>   
-              onDragStart={handleDragStart}
-              onDrag={handleDrag}
-              onDragEnd={handleDragEnd}
-              style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-              <img alt="cloud" src={cloudSrc} />
-              {dcloud===true ? <img alt="cloud" src={cloudSrc}/> : <div></div>}
-            </Diaryimg2Div>
-            <Dakkusetbuttondiv2>
-              <Dakkusetbutton3>Save</Dakkusetbutton3>
-            </Dakkusetbuttondiv2>
-          </DakkusetDiv>
-          <Dakkuzonediv>
-            <Dakkustickerline>
-              <Dakkusticker 
-              draggable
-              onDragStart={(event)=> handleDragStart(event,cloudSrc)}
-              src={cloudSrc}
-              alt="cloud"
-            
-              onClick={()=>setdcloud(!dcloud)}>
-                
-              </Dakkusticker>
-              <Dakkusticker src={heartSrc}></Dakkusticker>
-              <Dakkusticker src={starSrc}></Dakkusticker>
-              <Dakkusticker src={tvSrc}></Dakkusticker>
-              <Dakkusticker src={calenderSrc}></Dakkusticker>
-            </Dakkustickerline>
-            <Dakkustickerline>
-              <Dakkusticker src={trashSrc}></Dakkusticker>
-              <Dakkusticker src={lockSrc}></Dakkusticker>
-              <Dakkusticker src={keySrc}></Dakkusticker>
-              <Dakkusticker src={searchSrc}></Dakkusticker>
-              <Dakkusticker src={settingSrc}></Dakkusticker>
-            </Dakkustickerline>
-            <Dakkustickerline>
-              <Dakkusticker src={hatSrc}></Dakkusticker>
-              <Dakkusticker src={likeSrc}></Dakkusticker>
-              <Dakkusticker src={diaSrc}></Dakkusticker>
-              <Dakkusticker src={moneySrc}></Dakkusticker>
-              <Dakkusticker src={musicSrc}></Dakkusticker>
-            </Dakkustickerline>
-          </Dakkuzonediv>
+            <DakkusetDiv>
+
+              <Buttonbox>
+                <PinkColorbutton>
+                  <Buttontxt onClick={() => handleButtonClick(`${COLORS.PINK}`)} ></Buttontxt>
+                </PinkColorbutton>
+                <BlueColorbutton>
+                  <Buttontxt onClick={() => handleButtonClick(`${COLORS.BLUE}`)} ></Buttontxt>
+                </BlueColorbutton>
+                <PurpleColorbutton>
+                  <Buttontxt onClick={() => handleButtonClick(`${COLORS.PURPLE}`)} ></Buttontxt>
+                </PurpleColorbutton>
+                <GrayColorbutton>
+                  <Buttontxt onClick={() => handleButtonClick(`${COLORS.GRAY}`)}></Buttontxt>
+                </GrayColorbutton>
+                <YellowColorbutton>
+                  <Buttontxt onClick={() => handleButtonClick(`${COLORS.Light_Orange}`)} > </Buttontxt>
+                </YellowColorbutton>
+              </Buttonbox>
+              <Diaryimg2Div bgColor={backgroundColor}>
+                <Diaryname2Div>
+
+                  <TextInput
+                    type="text"
+                    placeholder="다이어리 제목"
+                    value={inputText}
+                    onChange={handleInputChange}
+                    maxLength={maxCharacters}
+                  />
+                  
+                    {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                    {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                    {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                    {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                    {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+
+                    {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                    {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                    {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                    {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                    {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+
+                    {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                    {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                    {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                    {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                    {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                  
+
+                </Diaryname2Div>
+              </Diaryimg2Div>
+            </DakkusetDiv>
+            <Dakkuzonediv>
+              <DakkusetbuttonDiv>
+                <Dakkusetbutton1>20xx.xx.xx</Dakkusetbutton1>
+                <Dakkusetbutton2>Delete</Dakkusetbutton2>
+              </DakkusetbuttonDiv>
+              <Dakkustickerline>
+                <Dakkusticker onClick={() => setdcloud(!dcloud)} src={cloudSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdheart(!dheart)} src={heartSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdstar(!dstar)} src={starSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdtv(!dtv)} src={tvSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdcalender(!dcalender)} src={calenderSrc}></Dakkusticker>
+              </Dakkustickerline>
+              <Dakkustickerline>
+                <Dakkusticker onClick={() => setdtrash(!dtrash)} src={trashSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdlock(!dlock)} src={lockSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdkey(!dkey)} src={keySrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdsearch(!dsearch)} src={searchSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdsetting(!dsetting)} src={settingSrc}></Dakkusticker>
+              </Dakkustickerline>
+              <Dakkustickerline>
+                <Dakkusticker onClick={() => setdhat(!dhat)} src={hatSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdlike(!dlike)} src={likeSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setddia(!ddia)} src={diaSrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdmoney(!dmoney)} src={moneySrc}></Dakkusticker>
+                <Dakkusticker onClick={() => setdmusic(!dmusic)} src={musicSrc}></Dakkusticker>
+              </Dakkustickerline>
+              <Dakkusetbuttondiv2>
+                <Dakkusetbutton3>Save</Dakkusetbutton3>
+              </Dakkusetbuttondiv2>
+            </Dakkuzonediv>
           </DiaryBox2>
         </DakkubigDiv>
       </form>
