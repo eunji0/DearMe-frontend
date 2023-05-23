@@ -6,7 +6,7 @@ import rightSrc from "../../assets/svg/mainRight.svg";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import DetailPage from "../detail/DetailPage";
-import axios from "axios";
+import { baseURL, username, getDiaryByUsername } from "../../api/api";
 
 const TitleBox = styled.div`
 display: flex;
@@ -139,7 +139,8 @@ const MainPage = () => {
   const [detailOn, setDetailOn] = useState(false);
   const startHour = 0;
   const endHour = 24;
-
+  const [diaryData, setDiaryData] = useState([]);
+  
   const handleDetailPageClose = () => {
     setDetailOn(false);
   };
@@ -191,52 +192,54 @@ const MainPage = () => {
     setWeeklyDates(newWeekDates);
   };
 
-  // const fetchScheduleData = async () => {
-  //   try {
-  //     const response = await axios.get('http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timecapsule/12');
-  //     const dummyScheduleData = response.data;
-  //     const filteredScheduleData = {};
-
-  //     Object.keys(dummyScheduleData).forEach(date => {
-  //       if (weeklyDates.some(weekDate => weekDate.toISOString().slice(0, 10) === date)) {
-  //         filteredScheduleData[date] = dummyScheduleData[date];
-  //       }
-  //     });
-
-  //     setScheduleData(filteredScheduleData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const fetchScheduleData = () => {
-    // 더미 일정 데이터
-    const dummyScheduleData = {
-      '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
-      '2023-05-22': ['Task 1', 'Task 2'], // 월요일
-      '2023-05-23': ['Appointment'], // 화요일
-      '2023-05-24': [], // 수요일
-      '2023-05-25': ['Event'], // 목요일
-      '2023-05-26': ['Project'], // 금요일
-      '2023-05-27': ['Task 3'], // 토요일
-      '2023-05-28': ['Task 3'], // 다음주
-    };
-  
-    // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
-    const filteredScheduleData = weeklyDates.reduce((result, date) => {
-      const formattedDate = date.toISOString().slice(0, 10);
-      result[formattedDate] = dummyScheduleData[formattedDate] || [];
-      return result;
-    }, {});
-  
-    setScheduleData(filteredScheduleData);
+  //데이터 가져오기
+  const fetchScheduleData = async () => {
+    try {
+      const diaryData = await getDiaryByUsername(username);
+      console.log(diaryData.result.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
-  
 
+  fetchScheduleData();
+
+  // const fetchScheduleData = () => {
+  //   // 더미 일정 데이터
+  //   const dummyScheduleData = {
+  //     '2023-05-20': ['Meeting 1', 'Meeting 2'],
+  //     '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
+  //     '2023-05-22': ['Task 1', 'Task 2'], // 월요일
+  //     '2023-05-23': ['Appointment'], // 화요일
+  //     '2023-05-24': [], // 수요일
+  //     '2023-05-25': ['Event'], // 목요일
+  //     '2023-05-26': ['Project'], // 금요일
+  //     '2023-05-27': ['Task 3'], // 토요일
+  //     '2023-05-28': ['Task 3'], // 다음주
+  //   };
+
+  //   // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
+  //   const filteredScheduleData = weeklyDates.reduce((result, date) => {
+  //     const formattedDate = date.toISOString().slice(0, 10);
+  //     if (formattedDate in dummyScheduleData) {
+  //       result[formattedDate] = dummyScheduleData[formattedDate];
+  //     } else {
+  //       result[formattedDate] = [];
+  //     }
+  //     return result;
+  //   }, {});
+
+  //   setScheduleData(filteredScheduleData);
+  // };
 
   useEffect(() => {
     fetchScheduleData();
   }, [weeklyDates]);
+
+  // weeklyDates와 scheduleData 출력
+  console.log(weeklyDates);
+  console.log(scheduleData);
+
 
   return (
     <div style={{ marginBottom: "50px" }}>
@@ -254,8 +257,8 @@ const MainPage = () => {
           <img alt="next" src={rightSrc} onClick={() => goToWeek(1)} />
         </BtnBox>
       </BtnLayout>
-      <div></div>
-      <WeekLayout>
+
+      {/* <WeekLayout>
         <div style={{ flex: 1, textAlign: 'center' }} />
         {daysOfWeek.map((day) => (
           <WeekBox key={day} style={{ flex: 1, textAlign: 'center' }}>
@@ -273,8 +276,9 @@ const MainPage = () => {
                 <HourBox style={{ flex: 1, textAlign: 'center' }}>
                   {hour}:00
                 </HourBox>
+
                 {daysOfWeek.map((day, dayIndex) => {
-                  const date = weeklyDates[dayIndex+1]?.toISOString().slice(0, 10) || null;
+                  const date = weeklyDates[dayIndex]?.toISOString().slice(0, 10) || null;
                   const daySchedule = scheduleData[date] || [];
                   return (
                     <ListBox onClick={() => setDetailOn(!detailOn)} key={`${day}-${hour}`}>
@@ -290,10 +294,10 @@ const MainPage = () => {
         </div>
       </div>
       {detailOn && (
-  <SlidePage open={detailOn} className={detailOn ? "slide-in" : "slide-out"}>
-    <DetailPage onClose={handleDetailPageClose} />
-  </SlidePage>
-)}
+        <SlidePage open={detailOn} className={detailOn ? "slide-in" : "slide-out"}>
+          <DetailPage onClose={handleDetailPageClose} />
+        </SlidePage>
+      )} */}
     </div>
   );
 };

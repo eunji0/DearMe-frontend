@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
-import {BaseUrl} from "../../api/api";
-import axios from 'axios';
+
 
 
 const SignBox = styled.div`
