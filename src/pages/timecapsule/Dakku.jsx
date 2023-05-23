@@ -85,21 +85,38 @@ display: flex;
 flex-direction: column;
 align-items: center;
 padding: 50px 30px;
-gap: 30px;
+gap: 10px;
 width: 500px;
 height: 730px;
 background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
 const DiaryimgstickerDiv = styled.div`
-width: 200px;
-height: 400px;
 display: flex;
 flex-direction: row;
+justify-content: center;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-background-color: transparent;
+width: 310px;
+height: 110px;
+overflow: hidden;
+}`
+
+const Imgstickers1 = styled.div`
+width: 90px;
+height: 90px;
 `
+ 
+const Imgstickers2 = styled.div`
+width: 90px;
+height: 90px;
+`
+
+const Imgstickers3 = styled.div`
+width: 90px;
+height: 90px;
+`
+
 
 const Buttonbox = styled.div`
 display: flex;
@@ -205,7 +222,6 @@ gap: 30px;
   }
 `
 
-
 const Buttontxt = styled.div`
 width: 58px;
 height: 19px;
@@ -237,6 +253,7 @@ text-align: center;
 justify-content: center;
 color: ${COLORS.Black};
 background-color: transparent;
+justify-content: center;
 `
 
 const DiaryDiv = styled.div`
@@ -262,7 +279,7 @@ height: 79px;
 const DiarynameDiv = styled.div`
 width: 220px;
 height: 50px;
-padding: 10px;
+padding: 30px;
 background: ${COLORS.WHITE};
 `
 
@@ -270,6 +287,7 @@ const Diaryname2Div = styled.div`
 width: 350px;
 height: 80px;
 background: ${COLORS.WHITE};
+
 `
 const Dakkusetbuttondiv2 = styled.div`
 display: flex;
@@ -356,6 +374,7 @@ color: ${COLORS.BLACK};
 const DakkusetImg = styled.img`
 width: 546px;
 height: 633px;
+justify-content: center;
 `
 const Dakkuzonediv = styled.div`
 display: flex;
@@ -445,8 +464,32 @@ const Dakku = () => {
     }
   };
 
-  const handleDragStart = (event, source) => {
-    event.dataTransfer.setData("source", source);
+  const images = document.querySelectorAll('img');
+let clickCount = 0;
+
+images.forEach((image) => {
+  image.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount >= 2) {
+      images.forEach((img) => {
+        img.style.display = 'inital';
+      });
+    }
+  });
+});
+
+const [selectedImage1, setSelectedImage1] = useState(null);
+  const [selectedImage2, setSelectedImage2] = useState(null);
+  const [selectedImage3, setSelectedImage3] = useState(null);
+
+  const onClick = (imageSrc) => {
+    if (selectedImage1 === null) {
+      setSelectedImage1(imageSrc);
+    } else if (selectedImage2 === null) {
+      setSelectedImage2(imageSrc);
+    } else if (selectedImage3 === null) {
+      setSelectedImage3(imageSrc);
+    }
   };
 
   return (
@@ -499,7 +542,6 @@ const Dakku = () => {
               </Buttonbox>
               <Diaryimg2Div bgColor={backgroundColor}>
                 <Diaryname2Div>
-
                   <TextInput
                     type="text"
                     placeholder="다이어리 제목"
@@ -507,27 +549,69 @@ const Dakku = () => {
                     onChange={handleInputChange}
                     maxLength={maxCharacters}
                   />
+                  </Diaryname2Div>
+                  <DiaryimgstickerDiv>
                   
+            <Imgstickers1>
                     {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
                     {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
                     {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
                     {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
                     {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
-
                     {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
                     {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
                     {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
                     {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
                     {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
-
                     {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
                     {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
                     {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
                     {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
                     {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
-                  
+                    </Imgstickers1>
 
-                </Diaryname2Div>
+                    <Imgstickers2>
+                    {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                    {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                    {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                    {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                    {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                    {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                    {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                    {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                    {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                    {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                    {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                    {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                    {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                    {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                    {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                    
+                    </Imgstickers2>
+
+                    <Imgstickers3>
+                    {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                    {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                    {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                    {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                    {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                    {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                    {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                    {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                    {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                    {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                    {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                    {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                    {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                    {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                    {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                    </Imgstickers3>
+                    
+                    
+
+                    </DiaryimgstickerDiv>
+                  
+              
               </Diaryimg2Div>
             </DakkusetDiv>
             <Dakkuzonediv>
@@ -536,8 +620,8 @@ const Dakku = () => {
                 <Dakkusetbutton2>Delete</Dakkusetbutton2>
               </DakkusetbuttonDiv>
               <Dakkustickerline>
-                <Dakkusticker onClick={() => setdcloud(!dcloud)} src={cloudSrc}></Dakkusticker>
-                <Dakkusticker onClick={() => setdheart(!dheart)} src={heartSrc}></Dakkusticker>
+              <Dakkusticker onClick={() => setdcloud(!dcloud)} src={cloudSrc}></Dakkusticker>
+              <Dakkusticker onClick={() => setdheart(!dheart)} src={heartSrc}></Dakkusticker>
                 <Dakkusticker onClick={() => setdstar(!dstar)} src={starSrc}></Dakkusticker>
                 <Dakkusticker onClick={() => setdtv(!dtv)} src={tvSrc}></Dakkusticker>
                 <Dakkusticker onClick={() => setdcalender(!dcalender)} src={calenderSrc}></Dakkusticker>

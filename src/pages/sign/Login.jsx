@@ -180,8 +180,19 @@ color: ${COLORS.WHITE};
 
 export const Login = () => {
 
-  const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
+  const LoginData = async () => {
+    try {
+      const userId = await getUserId(userId);
+      console.log(userId.result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  LoginData();
+
+  const [username, getUsername] = useState("");
+  const [password, getPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -205,7 +216,7 @@ export const Login = () => {
                 type="text"
                 id="userId"
                 value={userId}
-                onChange={(e) => setUserId(e.target.value)} />
+                onChange={(e) => getUsername(e.target.value)} />
             </InnerBox>
             <InnerBox>
               <TitleBox>비밀번호 :</TitleBox>
@@ -213,13 +224,15 @@ export const Login = () => {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} />
+                onChange={(e) => getPassword(e.target.value)} />
             </InnerBox>
             
           </InputLayout>
           
           <LogBtn>로그인</LogBtn>
         </InputBox>
+
+        
        
       </form>
     </div>

@@ -5,7 +5,7 @@ import GlobalStyled from './assets/styles/GlobalStyled';
 
 import  Header from './component/header/Header';
 import  Signup  from './pages/sign/Signup';
-import Login from './pages/sign/Login';
+import {Login} from './pages/sign/Login';
 import Dakku  from './pages/timecapsule/Dakku';
 import DetailPage from './pages/detail/DetailPage';
 import TimeCapsules from './pages/timecapsule/TimeCapsules';
