@@ -17,3 +17,18 @@ export const getDiaryByUsername = async (username) => {
     throw new Error(error.message);
   }
 };
+
+//회원가입
+export const registerUser = async (userData) => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/user`,
+      userData
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

@@ -140,7 +140,7 @@ const MainPage = () => {
   const startHour = 0;
   const endHour = 24;
   const [diaryData, setDiaryData] = useState([]);
-  
+
   const handleDetailPageClose = () => {
     setDetailOn(false);
   };
@@ -204,41 +204,9 @@ const MainPage = () => {
 
   fetchScheduleData();
 
-  // const fetchScheduleData = () => {
-  //   // 더미 일정 데이터
-  //   const dummyScheduleData = {
-  //     '2023-05-20': ['Meeting 1', 'Meeting 2'],
-  //     '2023-05-21': ['Meeting 1', 'Meeting 2'], // 일요일
-  //     '2023-05-22': ['Task 1', 'Task 2'], // 월요일
-  //     '2023-05-23': ['Appointment'], // 화요일
-  //     '2023-05-24': [], // 수요일
-  //     '2023-05-25': ['Event'], // 목요일
-  //     '2023-05-26': ['Project'], // 금요일
-  //     '2023-05-27': ['Task 3'], // 토요일
-  //     '2023-05-28': ['Task 3'], // 다음주
-  //   };
-
-  //   // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
-  //   const filteredScheduleData = weeklyDates.reduce((result, date) => {
-  //     const formattedDate = date.toISOString().slice(0, 10);
-  //     if (formattedDate in dummyScheduleData) {
-  //       result[formattedDate] = dummyScheduleData[formattedDate];
-  //     } else {
-  //       result[formattedDate] = [];
-  //     }
-  //     return result;
-  //   }, {});
-
-  //   setScheduleData(filteredScheduleData);
-  // };
-
   useEffect(() => {
     fetchScheduleData();
   }, [weeklyDates]);
-
-  // weeklyDates와 scheduleData 출력
-  console.log(weeklyDates);
-  console.log(scheduleData);
 
 
   return (
@@ -257,8 +225,8 @@ const MainPage = () => {
           <img alt="next" src={rightSrc} onClick={() => goToWeek(1)} />
         </BtnBox>
       </BtnLayout>
-
-      {/* <WeekLayout>
+  
+      <WeekLayout>
         <div style={{ flex: 1, textAlign: 'center' }} />
         {daysOfWeek.map((day) => (
           <WeekBox key={day} style={{ flex: 1, textAlign: 'center' }}>
@@ -266,7 +234,7 @@ const MainPage = () => {
           </WeekBox>
         ))}
       </WeekLayout>
-
+  
       <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
           {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
@@ -276,12 +244,23 @@ const MainPage = () => {
                 <HourBox style={{ flex: 1, textAlign: 'center' }}>
                   {hour}:00
                 </HourBox>
-
+  
                 {daysOfWeek.map((day, dayIndex) => {
                   const date = weeklyDates[dayIndex]?.toISOString().slice(0, 10) || null;
                   const daySchedule = scheduleData[date] || [];
+                  const diaryItem = diaryData.find(item => item.coordinateX === dayIndex && item.coordinateY === hourIndex);
+                  const hasDiary = !!diaryItem;
+  
                   return (
-                    <ListBox onClick={() => setDetailOn(!detailOn)} key={`${day}-${hour}`}>
+                    <ListBox
+                      onClick={() => setDetailOn(!detailOn)}
+                      key={`${day}-${hour}`}
+                      style={{
+                        gridColumnStart: dayIndex + 1,
+                        gridRowStart: hourIndex + 1,
+                        backgroundColor: hasDiary ? 'lightblue' : 'white'
+                      }}
+                    >
                       {daySchedule.map((schedule) => (
                         <List key={schedule}>{schedule}</List>
                       ))}
@@ -297,9 +276,63 @@ const MainPage = () => {
         <SlidePage open={detailOn} className={detailOn ? "slide-in" : "slide-out"}>
           <DetailPage onClose={handleDetailPageClose} />
         </SlidePage>
-      )} */}
+      )}
     </div>
   );
 };
 
 export default MainPage;
+
+  // const fetchScheduleData = () => {
+  //   // 더미 일정 데이터
+  //   const dummyScheduleData = {
+  //     '2023-05-20-9:00': ['Meeting 1', 'Meeting 2'],
+  //     '2023-05-21-9:00': ['Meeting 1', 'Meeting 2'], // 일요일
+  //     '2023-05-22-9:00': ['Task 1', 'Task 2'], // 월요일
+  //     '2023-05-23-9:00': ['Appointment'], // 화요일
+  //     '2023-05-24-9:00': [], // 수요일
+  //     '2023-05-25-9:00': ['Event'], // 목요일
+  //   };
+
+  //   // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
+  //   const filteredScheduleData = weeklyDates.reduce((result, date) => {
+  //     const formattedDate = date.toISOString().slice(0, 10);
+  //     if (formattedDate in dummyScheduleData) {
+  //       result[formattedDate] = dummyScheduleData[formattedDate];
+  //     } else {
+  //       result[formattedDate] = [];
+  //     }
+  //     return result;
+  //   }, {});
+
+  //   setScheduleData(filteredScheduleData);
+  // };
+
+
+  
+//   <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
+//   <div>
+//     {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
+//       const hour = startHour + hourIndex;
+//       return (
+//         <div key={hour} style={{ display: 'flex' }}>
+//           <HourBox style={{ flex: 1, textAlign: 'center' }}>
+//             {hour}:00
+//           </HourBox>
+
+//           {daysOfWeek.map((day, dayIndex) => {
+//             const date = weeklyDates[dayIndex]?.toISOString().slice(0, 10) || null;
+//             const daySchedule = scheduleData[date] || [];
+//             return (
+//               <ListBox onClick={() => setDetailOn(!detailOn)} key={`${day}-${hour}`}>
+//                 {daySchedule.map((schedule) => (
+//                   <List key={schedule}>{schedule}</List>
+//                 ))}
+//               </ListBox>
+//             );
+//           })}
+//         </div>
+//       );
+//     })}
+//   </div>
+// </div>

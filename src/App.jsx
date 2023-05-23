@@ -7,6 +7,7 @@ import Signup from './pages/sign/Signup';
 import TimeCapsules from './pages/timecapsule/TimeCapsules';
 import Noticed from './pages/mypage/Noticed';
 import SideBar from './component/SideBar';
+import Parent from './component/calendar/Parent';
 
 function App() {
 
@@ -20,6 +21,8 @@ function App() {
 						<Route path='/' element={<MainPage />} />
 						<Route path='/signup' element={<Signup />} />
 						<Route path='/timecapsules' element={<TimeCapsules />} />
+						<Route path='/a' element={<Parent />}/>
+
 						<Route element={<MypageLayout />}>
 							<Route path="/notice" element={<Noticed />} />
 						</Route>
