@@ -50,7 +50,7 @@ height: 50px;
 const Header = () => {
 	return (
 			<All>
-				<Link to="/">
+				<Link to="​/timeschedule​/{userName}​/{year}​/{month}​/{day}">
 					<img alt="logo" src={logoSrc}/>
 				</Link>
 				<div>
@@ -63,9 +63,9 @@ const Header = () => {
 						<Link to="/notice">
 							<img alt="alarm" src={alarmSrc}/>
 						</Link>
-						<div>
+						<Link to="/timecapsules/:id">
 							<img alt="myProfile" src={myProfileSrc}/>
-						</div>
+						</Link>
 					</MyPageBox>
 				</div>
 			</All>

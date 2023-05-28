@@ -7,7 +7,7 @@ import Signup from './pages/sign/Signup';
 import TimeCapsules from './pages/timecapsule/TimeCapsules';
 import Noticed from './pages/mypage/Noticed';
 import SideBar from './component/SideBar';
-import Parent from './component/calendar/Parent';
+import NoteWeb from './pages/diary/NoteWeb';
 
 function App() {
 
@@ -18,11 +18,10 @@ function App() {
 				<BrowserRouter>
 					<Header />
 					<Routes>
-						<Route path='/' element={<MainPage />} />
+						<Route path='​/timeschedule​/{userName}​/{year}​/{month}​/{day}' element={<MainPage />} />
 						<Route path='/signup' element={<Signup />} />
-						<Route path='/timecapsules' element={<TimeCapsules />} />
-						<Route path='/a' element={<Parent />}/>
-
+						<Route path='/timecapsules/:id' element={<TimeCapsules />} />
+						<Route path='/a' element={<NoteWeb />}/>
 						<Route element={<MypageLayout />}>
 							<Route path="/notice" element={<Noticed />} />
 						</Route>
