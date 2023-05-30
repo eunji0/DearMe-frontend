@@ -217,7 +217,7 @@ const TimeCapsules = () => {
                 <ListBox key={index}>
                   <DateLayout>
                     <DateBox>
-                      {item.toDay} ~ {item.nextDay}
+                    {item.toDay} -&gt; {item.nextDay}
                     </DateBox>
                   </DateLayout>
                   <TextBox>

@@ -131,7 +131,7 @@ const WriteTime = ({ onClose }) => {
     const numbersOnly = inputDate.replace(/[^\d]/g, '');
 
     // YYYY.MM.DD 형식으로 포맷 적용
-    const formatted = numbersOnly.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3');
+    const formatted = numbersOnly.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
 
     return formatted;
   };

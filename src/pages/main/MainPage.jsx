@@ -102,34 +102,7 @@ font-size: 16px;
 line-height: 19px;
 color: ${COLORS.BLACK};`
 
-const List = styled.div`
-display: flex;
-flex-direction: row;
-justify-content: left;
-align-items: center;
-padding: 5px 10px;
-width: 100%;
-overflow: hidden;
-height: 24px;
-background: ${COLORS.Orange};
-border-radius: 5px;
-`
 
-const LinkStyle = styled(Link)`
-text-decoration: none;`
-
-const SlidePage = styled.div`
-  position: fixed;
-  top: 0;
-  right: ${({ open }) => (open ? '0' : '-100%')};
-  bottom: 0;
-  width: 705px;
-  height: 100vh;
-  z-index: 100;
-  background-color: ${COLORS.Orange};
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: right 0.3s ease-in-out;
-`;
 
 
 const MainPage = () => {
@@ -137,8 +110,8 @@ const MainPage = () => {
   const [weeklyDates, setWeeklyDates] = useState([]);
   const containerRef = useRef(null);
   const [diaryData, setDiaryData] = useState([]);
+  const [dates, setDates] = useState([]); // 추가: dates 상태 변수
 
-  
   useEffect(() => {
     const calculateWeeklyDates = () => {
       const currentDate = new Date();
@@ -150,6 +123,8 @@ const MainPage = () => {
 
       const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
       const dates = [];
+      setDates(dates);
+
       let currentDay = new Date(startOfWeek);
       while (currentDay <= endOfWeek) {
         dates.push(new Date(currentDay));
@@ -161,6 +136,7 @@ const MainPage = () => {
 
     calculateWeeklyDates();
   }, []);
+
 
   useEffect(() => {
     const container = containerRef.current;
@@ -183,6 +159,7 @@ const MainPage = () => {
     }
 
     setWeeklyDates(newWeekDates);
+    setDates(newWeekDates);
   };
 
   useEffect(() => {
@@ -243,7 +220,9 @@ const MainPage = () => {
       <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
 
-          <Calendar diaryData={diaryData}/>
+          <Calendar diaryData={diaryData} 
+          dates={dates}
+          />
         </div>
       </div>
     </div>

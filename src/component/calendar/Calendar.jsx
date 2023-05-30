@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import COLORS from '../../assets/styles/colors';
 import DetailPage from '../../pages/detail/DetailPage';
 import { fetchSchedule } from '../../api/api';
-
+import { useParams, useNavigate } from 'react-router-dom';
 
 const HourBox = styled.td`
   display: flex;
@@ -66,22 +66,37 @@ const SlidePage = styled.div`
   transition: right 0.3s ease-in-out;
 `;
 
-const Calendar = ({ diaryData }) => {
+const Calendar = ({ diaryData, dates }) => {
   const [detailOn, setDetailOn] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const handleDetailPageClose = (dayId) => {
-    setDetailOn(!detailOn);
-    setSelectedDayId(dayId);
+  const handleDateChange = (newDate) => {
+    setSelectedDate(newDate);
   };
 
-  const handle = () => {
+  const formattedDates = dates.map(date => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+
+  const handleDetailPageClose = (dayId, index) => {
     setDetailOn(!detailOn);
-    setSelectedDayId(null);
-  }
+    setSelectedDayId(dayId);
+    setSelectedDate(formattedDates[index]);
 
-  console.log(selectedDayId)
+        // URL 업데이트
+        const params = new URLSearchParams();
+        params.set('q', selectedDate);
+        const newUrl = `/%E2%80%8B/timeschedule%E2%80%8B/%7BuserName%7D%E2%80%8B/%7Byear%7D%E2%80%8B/%7Bmonth%7D%E2%80%8B/%7Bday%7D?${params.toString()}`;
+        navigate(newUrl, { replace: true });
+  };
 
+  console.log(diaryData)
 
   return (
     <All>
@@ -98,19 +113,17 @@ const Calendar = ({ diaryData }) => {
                   const endHour = parseInt(todo.endTime.slice(0, 2));
                   return startHour <= hour && hour < endHour;
                 });
-                const limitedTodos = todos && todos.slice(0, 4); // Add null check here
-
-                
+                const limitedTodos = todos && todos.slice(0, 4);
                 return (
                   <td key={index}>
                     {limitedTodos && limitedTodos.length > 0 ? (
-                      <ListBox onClick={() => handleDetailPageClose(item?.dayId)}>
+                      <ListBox onClick={() => handleDetailPageClose(item?.dayId, index)}>
                         {limitedTodos.map((todo) => (
                           <List key={todo.todoId}>{todo.content}</List>
                         ))}
                       </ListBox>
                     ) : (
-                      <ListBox onClick={handle}></ListBox>
+                      <ListBox onClick={() => handleDetailPageClose(item?.dayId, index)}></ListBox>
                     )}
                   </td>
                 );
@@ -121,7 +134,13 @@ const Calendar = ({ diaryData }) => {
       </table>
       {detailOn && (
         <SlidePage open={detailOn} className={detailOn ? 'slide-in' : 'slide-out'}>
-          <DetailPage diaryData={diaryData} selectedDayId={selectedDayId || null} onClose={handleDetailPageClose} />
+          <DetailPage
+            diaryData={diaryData}
+            selectedDayId={selectedDayId || null}
+            selectedDate={selectedDate}
+            onClose={handleDetailPageClose}
+            onDateChange={handleDateChange}
+          />
         </SlidePage>
       )}
     </All>

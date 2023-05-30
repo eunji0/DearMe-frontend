@@ -1,13 +1,121 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import COLORS from "../../assets/styles/colors";
+import React, { useEffect, useState, useRef } from 'react';
+import styled from 'styled-components';
+import COLORS from '../../assets/styles/colors';
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
-import backSrc from "../../assets/svg/back.svg";
-import { getTimecapsules, username } from "../../api/api";
+import { getTimecapsules, username, addSchedule, fetchDaySchedule } from "../../api/api";
 import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
-import Todo from "../../component/detail/Todo";
+import axios from 'axios';
+
+const Todo = ({ selectedDate, onDateChange }) => {
+  const todayBoxRef = useRef(null);
+  const [todos, setTodos] = useState([
+    {todoId: 0, content: '', checkTodo: false, startTime: 9, endTime: 10 }
+  ]);
+  const [yearStr, monthStr, dayStr] = selectedDate.split('-').map(Number);
+  const hours = Array.from(Array(24).keys());
+
+  //목록가져오기
+  useEffect(() => {
+    const fetchTodoList = async () => {
+      try {
+        const requestUrl = `http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
+        const response = await axios.get(requestUrl);
+        // console.log('Fetched todo list:', response.data.result.data.toDo);
+        setTodos(response.data.result.data.toDo);
+      } catch (error) {
+        console.error('Failed to fetch todo list:', error);
+      }
+    };
+  
+    fetchTodoList();
+  }, []);
+
+  //내용변경
+  const handleContentChange = (todoId, content, checked) => {
+    const updatedTodos = todos.map((todo) =>
+      todo.todoId === todoId ? { ...todo, content, checkTodo: checked } : todo
+    );
+    setTodos(updatedTodos);
+  };
+
+  console.log(todos)
+  
+  //삭제
+  const handleDeleteTodo = (hour, id) => {
+    const updatedTodos = todos.filter((todo) => todo.startTime === `${hour}:00` && todo.todoId !== id);
+    setTodos(updatedTodos);
+  };
+
+  return (
+    <InBox>
+      <MidLayout>
+        {selectedDate ? (
+          <TxtBox>{selectedDate}</TxtBox>
+        ) : (
+          <TxtInput
+            type="text"
+            placeholder="추가할 일정의 날짜를 입력해주세요. ex)2023-05-05"
+          />
+        )}
+        <ButtonBox>
+
+          <img alt="left" src={leftSrc} />
+          <img alt="right" src={rightSrc} />
+        </ButtonBox>
+      </MidLayout>
+
+
+      <TodayBox ref={todayBoxRef} style={{ overflowY: 'scroll', height: '400px' }}>
+        {hours.map((hour) => (
+          <div style={{ marginBottom: "20px", width: "100%" }} key={hour}>
+            <Time>{`${hour}:00`}</Time>
+
+            {
+              todos?.filter((todo) => todo.startTime === `${hour}:00`).map((todo) => (
+              
+                <ContentBox key={`${hour}-${todo.todoId}`}>
+                  <CheckBox
+                    type="checkbox"
+                    checked={todo.checkTodo}
+                    onChange={(e) => handleContentChange(todo.todoId, todo.content, e.target.checked)}
+                  />
+
+                  <Inputs
+                    placeholder="일정을 입력해주세요."
+                    value={todo.content}
+                    onChange={(e) => handleContentChange(todo.todoId, e.target.value, todo.checkTodo)}
+                  />
+
+                  <SaveBtn onClick={() => handleDeleteTodo(hour, todo.todoId)}>
+                    <img alt="delete" src={minusSrc} />
+                  </SaveBtn>
+
+                </ContentBox>
+              ))
+            }
+            <ContentBox id="plus" 
+            // onClick={() => handleAddTodo(hour)}
+            >
+              <img alt="일정 추가" src={plusSrc} />
+              일정 추가하기
+            </ContentBox>
+          </div>
+        ))}
+
+      </TodayBox>
+      <SaveDiv>
+        <SBtn type='submit'
+          // onClick={handleAddTodoList}
+        >
+          <SaveFont>Save</SaveFont>
+        </SBtn>
+      </SaveDiv>
+
+    </InBox>
+  );
+};
 
 const InBox = styled.div`
 display: flex;
@@ -54,6 +162,7 @@ line-height: 19px;
 color: ${COLORS.BLACK};`
 
 const TodayBox = styled.div`
+width: 100%;
 resize: none;
 display: flex;
 flex-direction: column;
@@ -93,6 +202,7 @@ gap: 10px;
 `
 
 const ContentBox = styled.div`
+width: 100%;
 cursor: pointer;
 display: flex;
 flex-direction: row;
@@ -100,7 +210,6 @@ align-items: center;
 padding: 5px 10px;
 border: none;
 background-color: none;
-gap: 10px;
 background: none;
 width: 100%;
 font-style: normal;
@@ -122,6 +231,8 @@ width: 100%;
 
 const SaveBtn = styled.button`
 background-color: none;
+display: flex;
+justify-content: flex-end;
 border: none;
 background: none;
 `
@@ -212,38 +323,4 @@ background: ${COLORS.Light_Orange};
 border-radius: 10px;
 `
 
-
-const DetailPage = ({ onClose, selectedDayId, diaryData, selectedDate, onDateChange }) => {
-  const selectedData = diaryData.find((item) => item?.dayId === selectedDayId) || null;
-
-
-	return (
-		<All>
-			<img style={{width:"25px", height:"25px"}} alt="back" src={backSrc} onClick={onClose} />
-			<InBox style={{ paddingBottom: "30px" }}>
-				<TxtBox>
-					<TxtDiv>To me today</TxtDiv>
-				</TxtBox>
-				<TodayBox>
-					<InTxt>
-						{selectedData ? (
-							<div>{selectedData.today}</div>
-						) : (
-							<div>오늘의 나에게 온 말이 없습니다</div>
-						)}
-					</InTxt>
-				</TodayBox>
-			</InBox>
-
-			<Todo onDateChange={onDateChange} selectedDate={selectedDate} selectedDayId={selectedDayId} diaryData={diaryData}/>
-			
-			{/* <SaveDiv>
-				<SBtn>
-					<SaveFont>Save</SaveFont>
-				</SBtn>
-			</SaveDiv> */}
-		</All>
-	);
-};
-
-export default DetailPage;
+export default Todo;

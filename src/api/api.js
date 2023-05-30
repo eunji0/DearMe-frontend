@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const baseURL = 'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80';
-export const username = "str";
+export const username = "string11";
 
 
 //다이어리 데이터 가져오기
@@ -72,5 +72,48 @@ export const fetchSchedule = async (username, year, month, day) => {
 
   } catch (error) {
     console.error(error);
+  }
+};
+
+//하루일정가져오기
+export const fetchDaySchedule = async (username, year, month, day) => {
+  try {
+    const response = await axios.get(`${baseURL}/timeschedule/search/${username}/${year}/${month}/${day}`);
+
+    const schedule = response.data;
+    return schedule;
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//스케줄 날짜 등록
+export const addSchedule = async (selectedDate) => {
+  try {
+    const requestData = {
+      date: selectedDate,
+      today: "string",
+      tomorrow: "string",
+      userName: username,
+    };
+
+    const response = await fetch(`${baseURL}/timeschedule/day`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      // console.log(responseData.result.data);
+      return responseData;
+    } else {
+      console.log('스케줄 등록에 실패하였습니다.');
+    }
+  } catch (error) {
+    console.error('API 호출에 실패하였습니다.', error);
   }
 };
