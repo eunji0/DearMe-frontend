@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import COLORS from '../../assets/styles/colors';
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
-import { getTimecapsules, username, addSchedule, fetchDaySchedule } from "../../api/api";
+import { username, fetchTodoList, deleteTodo} from "../../api/api";
 import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
 import axios from 'axios';
@@ -18,18 +18,12 @@ const Todo = ({ selectedDate, onDateChange }) => {
 
   //목록가져오기
   useEffect(() => {
-    const fetchTodoList = async () => {
-      try {
-        const requestUrl = `http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
-        const response = await axios.get(requestUrl);
-        // console.log('Fetched todo list:', response.data.result.data.toDo);
-        setTodos(response.data.result.data.toDo);
-      } catch (error) {
-        console.error('Failed to fetch todo list:', error);
-      }
+    const fetchData = async () => {
+      const todos = await fetchTodoList(username, yearStr, monthStr, dayStr);
+      setTodos(todos);
     };
   
-    fetchTodoList();
+    fetchData();
   }, []);
 
   //내용변경
@@ -43,9 +37,48 @@ const Todo = ({ selectedDate, onDateChange }) => {
   console.log(todos)
   
   //삭제
-  const handleDeleteTodo = (hour, id) => {
-    const updatedTodos = todos.filter((todo) => todo.startTime === `${hour}:00` && todo.todoId !== id);
-    setTodos(updatedTodos);
+  // const handleDeleteTodo = (hour, id) => {
+  //   const updatedTodos = todos.filter((todo) => todo.startTime === `${hour}:00` && todo.todoId !== id);
+  //   setTodos(updatedTodos);
+  // };
+  const handleDeleteTodo = async (id) => {
+    await deleteTodo(id);
+    // 삭제 요청이 성공한 경우에만 해당 일정을 todos에서 제거하도록 처리할 수 있습니다.
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.todoId !== id));
+  };
+  
+
+  //todo 추가
+  const addTodoList = async (data) => {
+    try {
+      const response = await axios.post(`http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos`, data);
+      console.log('할일 리스트 등록 성공:', response.data.result.data);
+      setTodos(response.data.result.data)
+      // 요청 성공 후 처리할 코드 작성
+      // window.location.reload()
+      // window.location.href = window.location.href;
+    } catch (error) {
+      console.error('할일 리스트 등록 실패:', error);
+      // 요청 실패 시 처리할 코드 작성
+    }
+  };
+
+
+  const handleAddTodoList = () => {
+    const nonEmptyTodos = tto?.filter(todo => todo.content !== '');
+
+    const requestData = {
+      date: selectedDate,
+      toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
+        checkTodo: todo.checked,
+        content: todo.content,
+        endTime: `${todo.hour+1}:00`, // endTime 값을 적절히 설정해야 함
+        startTime: `${todo.hour}:00`,
+      })),
+      userName: username,
+    };
+
+    addTodoList(requestData);
   };
 
   return (
@@ -88,7 +121,7 @@ const Todo = ({ selectedDate, onDateChange }) => {
                     onChange={(e) => handleContentChange(todo.todoId, e.target.value, todo.checkTodo)}
                   />
 
-                  <SaveBtn onClick={() => handleDeleteTodo(hour, todo.todoId)}>
+                  <SaveBtn onClick={() => handleDeleteTodo(todo.todoId)}>
                     <img alt="delete" src={minusSrc} />
                   </SaveBtn>
 
@@ -96,7 +129,7 @@ const Todo = ({ selectedDate, onDateChange }) => {
               ))
             }
             <ContentBox id="plus" 
-            // onClick={() => handleAddTodo(hour)}
+            onClick={() => handleAddTodo(hour)}
             >
               <img alt="일정 추가" src={plusSrc} />
               일정 추가하기

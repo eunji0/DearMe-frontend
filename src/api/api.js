@@ -76,15 +76,14 @@ export const fetchSchedule = async (username, year, month, day) => {
 };
 
 //하루일정가져오기
-export const fetchDaySchedule = async (username, year, month, day) => {
+export const fetchTodoList = async (username, yearStr, monthStr, dayStr) => {
   try {
-    const response = await axios.get(`${baseURL}/timeschedule/search/${username}/${year}/${month}/${day}`);
-
-    const schedule = response.data;
-    return schedule;
-
+    const requestUrl = `${baseURL}/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
+    const response = await axios.get(requestUrl);
+    return response.data.result.data.toDo;
   } catch (error) {
-    console.error(error);
+    console.error('Failed to fetch todo list:', error);
+    return [];
   }
 };
 
@@ -115,5 +114,16 @@ export const addSchedule = async (selectedDate) => {
     }
   } catch (error) {
     console.error('API 호출에 실패하였습니다.', error);
+  }
+};
+
+//삭제하기
+export const deleteTodo = async (id) => {
+  try {
+    const requestUrl = `${baseURL}/timeschedule/todo/${id}`;
+    await axios.delete(requestUrl);
+    console.log('Todo deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete todo:', error);
   }
 };
