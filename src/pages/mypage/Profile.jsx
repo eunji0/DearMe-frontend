@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
+import {patchfixUser} from "../../api/api"
+import { useNavigate } from "react-router-dom";
 
 const SignBox = styled.div`
 display: flex;
@@ -153,7 +155,7 @@ const CheckBox = styled.input`
   }
 `;
 
-const SignBtn = styled.div`
+const SignBtn = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: center;
@@ -176,23 +178,32 @@ color: ${COLORS.WHITE};
 }
 `
 
-const OkBtn = styled.button`
-
-`
-
-
 const Profile = () => {
-
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Username: ${username}, Password: ${password}`);
-  };
+    console.log(`Username: ${userId}, Password: ${password}`);
 
+    try {
+      // fixUser 함수의 정의와 import 구문이 필요합니다.
+      const response = await patchfixUser({
+        email: email,
+        password: password,
+        phone: number,
+        username: userId,
+      });
+      navigate("/");
+      console.log(response);
+      alert('프로필 수정에 성공하였습니다.')
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -231,7 +242,7 @@ const Profile = () => {
             <InnerBox>
               <TitleBox>전화번호 :</TitleBox>
               <InBox
-                type="number"
+                type="text"
                 id="number"
                 value={number}
                 onChange={(e) => setNumber(e.target.value)} />

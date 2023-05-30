@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
@@ -18,6 +18,8 @@ import settingSrc from "../../assets/svg/setting.svg";
 import starSrc from "../../assets/svg/star.svg";
 import trashSrc from "../../assets/svg/trash.svg";
 import tvSrc from "../../assets/svg/tv.svg";
+import { getDiary, postDiary, username, baseURL } from "../../api/api";
+import axios from "axios";
 
 
 
@@ -65,6 +67,7 @@ height: 750.74px;
 ;
 `
 const DiaryimgDiv = styled.div`
+margin-top: 20px;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -72,7 +75,7 @@ padding: 30px 30px;
 gap: 10px;
 width: 300px;
 height: 430px;
-background: ${COLORS.Light_Orange};
+background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
 const Button = styled.button`
   width: 100px;
@@ -82,34 +85,45 @@ const Button = styled.button`
 
 const Diaryimg2Div = styled.div`
 margin-top: 20px;
-
 display: flex;
 flex-direction: column;
 align-items: center;
-padding: 50px 30px;
+padding: 30px 30px;
 gap: 10px;
-width: 400px;
-height: 600px;
+width: 300px;
+height: 430px;
 background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
 const DiaryimgstickerDiv = styled.div`
 display: flex;
 flex-direction: row;
 justify-content: center;
-align-items: flex-start;
-padding: 10px;
-gap: 10px;
+align-items: center;
+padding-left: 20px;
 width: 310px;
 height: 110px;
 img {
  float: left;
 }
 overflow: hidden;
-margin: 0 auto;
+}`
+const Diaryimgsticker2Div = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+width: 310px;
+height: 110px;
+margin-left: -30px;
+img {
+ float: left;
+}
+overflow: hidden;
 }`
 
 const Imgstickers1 = styled.div`
-width: 400px;
+margine-top : 10px;
+width: 300px;
 height: 120px;
 `
  
@@ -130,7 +144,7 @@ flex-direction: row;
 justify-content: center;
 align-items: center;
 padding: 10px;
-gap: 40px;
+gap: 30px;
 width: 466px;
 height: 60px;
 
@@ -142,13 +156,12 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-width: 40px;
-height: 40px;
+width: 30px;
+height: 30px;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 18px;
 background: ${COLORS.PINK};
 border-radius: 50px;
-gap: 30px;
 
 &:active {
   background: ${COLORS.WHITE};
@@ -161,8 +174,8 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-width: 40px;
-height: 40px;
+width: 30px;
+height: 30px;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 18px;
 background: ${COLORS.BLUE};
@@ -179,8 +192,8 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-width: 40px;
-height: 40px;
+width: 30px;
+height: 30px;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 18px;
 background: ${COLORS.PURPLE};
@@ -197,8 +210,8 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-width: 40px;
-height: 40px;
+width: 30px;
+height: 30px;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 18px;
 background: ${COLORS.GRAY};
@@ -215,8 +228,8 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 gap: 10px;
-width: 40px;
-height: 40px;
+width: 30px;
+height: 30px;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 18px;
 background: ${COLORS.Light_Orange};
@@ -246,13 +259,29 @@ color: ${COLORS.BLACK};
   color: ${COLORS.Orange};
   }
 `
-const TextInput = styled.input`
-width: 300px;
-height: 80px;
+const TextOutput = styled.output`
+width: 220px;
+height: 50px;
 font-family: 'Roboto';
 font-style: normal;
-font-weight: 700;
-font-size: 40px;
+font-weight: 500;
+font-size: 20px;
+display: flex;
+align-items: center;
+text-align: center;
+justify-content: center;
+color: ${COLORS.Black};
+background-color: transparent;
+justify-content: center;
+`
+
+const TextInput = styled.input`
+width: 220px;
+height: 50px;
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
 display: flex;
 align-items: center;
 text-align: center;
@@ -285,7 +314,7 @@ height: 79px;
 const DiarynameDiv = styled.div`
 width: 220px;
 height: 50px;
-padding: 30px;
+
 background: ${COLORS.WHITE};
 `
 
@@ -355,7 +384,7 @@ align-items: center;
 width: 586px;
 height: 1000px;
 `
-const Dakkusetbutton3 = styled.div`
+const Dakkusetbutton3 = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: flex-end;
@@ -370,6 +399,7 @@ font-style: normal;
 font-weight: 700;
 font-size: 16px;
 line-height: 19px;
+border: none;
 color: ${COLORS.BLACK};
 
 &:active {
@@ -438,6 +468,7 @@ background: ${COLORS.WHITE};
 
 
   const Dakku = () => {
+
     const [dcloud, setdcloud] = useState(false);
     const [dheart, setdheart] = useState(false);
     const [dstar, setdstar] = useState(false);
@@ -453,35 +484,181 @@ background: ${COLORS.WHITE};
     const [ddia, setddia] = useState(false);
     const [dmoney, setdmoney] = useState(false);
     const [dmusic, setdmusic] = useState(false);
+
+    const [showDiary1, gettitle1, getcolor1] = useState(true);
+    const [showDiary2, gettitle2, getcolor2] = useState(true);
+    const [showDiary3, gettitle3, getcolor3] = useState(true);
   
     const [backgroundColor, setBackgroundColor] = useState("");
     const [inputText, setInputText] = useState("");
-    const maxCharacters = 10;
+    const maxCharacters = 12;
+    const [getInput, setGetInput] = useState('');
   
     const handleButtonClick = (color) => {
       setBackgroundColor(color);
+      console.log(color);
     };
   
+     //타이틀 입력 함수 
     const handleInputChange = (event) => {
       const text = event.target.value;
       if (text.length <= maxCharacters) {
         setInputText(text);
       }
     };
-  
-    const images = document.querySelectorAll('img');
+
+
+//다이어리 타이틀 배열
+const showTitleArr = ["","",""];
+
+//타이틀 배열에 넣기 inPutText를 어캐 넣지
+// const gettitlediary = async () => {
+//   try {
+//     const response = await getDiary(username);
+//     console.log(response)
+//     const dataArray = response.result.data.inputText;
+//     // 최대3개까지
+//     for(let i =0; i<dataArray.length; i++)
+//     {
+//       showTitleArr[i] = dataArray[i];
+//         if(i===0)
+//         {
+//           gettitle1(showTitleArr[i].text);
+//         }
+//         else if(i===1)
+//         {
+//           gettitle2(showTitleArr[i].text);
+//         }
+//         else if(i===2)
+//         {
+//           gettitle3(showTitleArr[i].text);
+//         }
+
+//         if(i==2)
+//         {
+//           break;
+//         }
+//     }
+//     console.log(showTitleArr);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+useEffect(()=>{
+  getDiary(username)
+  .then(data => {
+    // 데이터를 사용하는 코드 작성
+    console.log(data);
+    setGetInput(data.result.data)
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}, [])
+
+
+const addToData = (newItem) => {
+  getInput.push(newItem);
+
+  if (getInput.length > 3) {
+    const lowestIdItemIndex = getInput.reduce((lowestIndex, item, currentIndex) => {
+      if (item.diaryId < getInput[lowestIndex].diaryId) {
+        return currentIndex;
+      }
+      return lowestIndex;
+    }, 0);
+
+    getInput.splice(lowestIdItemIndex, 1);
+  }
+}
+
+
+//다이어리 컬러 배열 backgroundColor를 어캐 넣지
+const showcolorArr = ["","",""];
+
+//컬러 배열에 넣기
+// const getcolordiary = async () => {
+//   try {
+//     const response = await getDiary(username);
+//     const dataArray = response.result.data.backgroundColor;
+//     // 최대3개까지
+//     for(let i =0; i<dataArray.length; i++)
+//     {
+//       showcolorArr[i] = dataArray[i];
+//         if(i===0)
+//         {
+//           getcolor1(showcolorArr[i].backgroundColor);
+//         }
+//         else if(i===1)
+//         {
+//           getcolor2(showcolorArr[i].backgroundColor);                                                                   
+//         }
+//         else if(i===2)
+//         {
+//           getcolor3(showcolorArr[i].backgroundColor);
+//         }
+
+//         if(i==2)
+//         {
+//           break;
+//         }
+//     }
+//     console.log(showcolorArr);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+const postDiary = async () => {
+  const newComment = 
+
+  {
+    color: backgroundColor,
+    coordinateX: 0,
+    coordinateY: 0,
+    date: "string",
+    imageType: "string",
+    title: inputText,
+    username: "wooyun"
+  }
+
+  console.log(newComment)
+  try {
+    const response = await axios.post(`${baseURL}/diary`, newComment);
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    console.log(error)
+    // throw new Error(error.message);
+  }
+};
+
+
+//색, 타이틀 api전송
+// const apidiary = async()=>{
+//   try{
+//     const response = await postDiary(backgroundColor, coordinateX, coordinateY, imageType, date, inputText, username);
+//     (response.result.data);
+//     // gettitlediary();
+//     // getcolordiary();
+    
+//  } catch (error) {
+// console.error(error);
+// }
+// }
+//     const images = document.querySelectorAll('img');
   let clickCount = 0;
   
-  images.forEach((image) => {
-    image.addEventListener('click', () => {
-      clickCount++;
-      if (clickCount >= 2) {
-        images.forEach((img) => {
-          img.style.display = 'inital';
-        });
-      }
-    });
-  });
+  // images.forEach((image) => {
+  //   image.addEventListener('click', () => {
+  //     clickCount++;
+  //     if (clickCount >= 2) {
+  //       images.forEach((img) => {
+  //         img.style.display = 'inital';
+  //       });
+  //     }
+  //   });
+  // });
   
   const imageList = [
     dcloud,
@@ -504,6 +681,7 @@ background: ${COLORS.WHITE};
   //const [selectedImage1, setSelectedImage1] = useState(null);
   //const [selectedImage2, setSelectedImage2] = useState(null);
   //const [selectedImage3, setSelectedImage3] = useState(null);
+  
 
   const [selectedImages, setSelectedImages] = useState([]);
 
@@ -568,38 +746,78 @@ background: ${COLORS.WHITE};
 
     //setSelectedImages((prevSelectedImages) => [...prevSelectedImages, imageList]);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(`Username: ${username}, color: ${color}, coordinateX: ${coordinateX}, coordinateY: ${coordinateY}, data: ${date}, imageType: ${imageType}, title: ${title}`);
+  };
+
+  const handleResetButtonClick = () => {
+    // 페이지 초기화 코드 작성
+    window.location.reload(); // 페이지를 새로고침하여 초기화면으로 돌아갑니다.
+  };
+
+
+
   
     return (
       <DakkuPage>
         <form>
           <DiarybigDiv>
             <DiaryBox>
+            {showDiary1 && (
               <DiaryDiv>
-                <DiaryimgDiv>
+                <DiaryimgDiv bgColor={backgroundColor}>
                   <DiarynameDiv>
+                  <TextOutput>{inputText}</TextOutput>
+                  <Diaryimgsticker2Div>
+                      <Imgstickers1>
+                      {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                      {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                      {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                      {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                      {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                      {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                      {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                      {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                      {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                      {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                      {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                      {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                      {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                      {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                      {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                      </Imgstickers1>
+                      </Diaryimgsticker2Div>
+                  </DiarynameDiv>
+                  </DiaryimgDiv>
+              </DiaryDiv>
+                )}
+ {showDiary2 && (
+              <DiaryDiv>
+              <DiaryimgDiv bgColor={showcolorArr[1]}>
+                  <DiarynameDiv>
+                  <TextOutput>{showTitleArr[1]}</TextOutput>
                   </DiarynameDiv>
                 </DiaryimgDiv>
               </DiaryDiv>
+ )}
+  {showDiary3 && (
               <DiaryDiv>
-                <DiaryimgDiv>
+              <DiaryimgDiv bgColor={showcolorArr[2]}>
                   <DiarynameDiv>
+                  <TextOutput>{showTitleArr[2]}</TextOutput>
                   </DiarynameDiv>
                 </DiaryimgDiv>
               </DiaryDiv>
-              <DiaryDiv>
-                <DiaryimgDiv>
-                  <DiarynameDiv>
-                  </DiarynameDiv>
-                </DiaryimgDiv>
-              </DiaryDiv>
-              <CheckBox></CheckBox>
+              )}
             </DiaryBox>
           </DiarybigDiv>
-  
+
           <DakkubigDiv>
             <DiaryBox2>
               <DakkusetDiv>
-  
+            
                 <Buttonbox>
                   <PinkColorbutton>
                     <Buttontxt onClick={() => handleButtonClick(`${COLORS.PINK}`)} ></Buttontxt>
@@ -618,7 +836,7 @@ background: ${COLORS.WHITE};
                   </YellowColorbutton>
                 </Buttonbox>
                 <Diaryimg2Div bgColor={backgroundColor}>
-                  <Diaryname2Div>
+                  <DiarynameDiv>
                     <TextInput
                       type="text"
                       placeholder="다이어리 제목"
@@ -626,7 +844,7 @@ background: ${COLORS.WHITE};
                       onChange={handleInputChange}
                       maxLength={maxCharacters}
                     />
-                    </Diaryname2Div>
+                    </DiarynameDiv>
                     <DiaryimgstickerDiv>
                       <Imgstickers1>
                       {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
@@ -651,7 +869,7 @@ background: ${COLORS.WHITE};
               <Dakkuzonediv>
                 <DakkusetbuttonDiv>
                   <Dakkusetbutton1>20xx.xx.xx</Dakkusetbutton1>
-                  <Dakkusetbutton2>Delete</Dakkusetbutton2>
+                  <Dakkusetbutton2 onClick={()=>handleResetButtonClick() }>Delete</Dakkusetbutton2>
                 </DakkusetbuttonDiv>
                 <Dakkustickerline>
                   <Dakkusticker onClick={() => handleImageClick(0)} src={cloudSrc}></Dakkusticker>
@@ -675,7 +893,8 @@ background: ${COLORS.WHITE};
                   <Dakkusticker onClick={() => handleImageClick(14)} src={musicSrc}></Dakkusticker>
                 </Dakkustickerline>
                 <Dakkusetbuttondiv2>
-                  <Dakkusetbutton3>Save</Dakkusetbutton3>
+                  <Dakkusetbutton3 onClick={()=> postDiary()} >Save</Dakkusetbutton3>
+                  
                 </Dakkusetbuttondiv2>
               </Dakkuzonediv>
             </DiaryBox2>

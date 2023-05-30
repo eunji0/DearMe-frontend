@@ -35,14 +35,13 @@ export const postFriadd = async (username, opponent) => {
   }
 };
 
-//친구 검색
-export const getFriadd = async (username, opponent) => {
+//친구 검색(전체 유저 목록임)
+export const getFriSearch = async (opponent) => {
   const newComment = {
-    me: username,
     opponent: opponent,
   };
   try {
-    const response = await api.post(`${baseURL}/friend/${username}/${opponent}`, newComment);
+    const response = await api.get(`${baseURL}/user/search/${opponent}`, newComment);
     return response.data;
   } catch (error) {
     throw new Error(error.message);
@@ -56,7 +55,7 @@ export const deleteFri = async (username, opponent) => {
     opponent: opponent,
   };
   try {
-    const response = await api.post(`${baseURL}/friend/${username}/${opponent}`, newComment);
+    const response = await api.delete(`${baseURL}/friend/delete/${username}/${opponent}`, newComment);
     return response.data;
   } catch (error) {
     throw new Error(error.message);
@@ -76,4 +75,78 @@ export const getFriList = async (username) => {
   }
 };
 
+// 친구추가 알람 리스트 
+export const getFriendAddList = async (username) => {
+  const newComment = {
+    me: username,
+  };
+  try {
+    const response = await api.get(`${baseURL}/friend/yet/${username}`, newComment);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
+//다이어리 등록
+export const postDiary = async () => {
+  // const newComment = 
+  // {
+  //   color: backgroundColor,
+  //   coordinateX: coordinateX,
+  //   coordinateY: coordinateY,
+  //   imageType: imageType,
+  //   date: date,
+  //   title: inputText,
+  //   username: username
+  // };
+  // {
+  //   color: backgroundColor,
+  //   coordinateX: 0,
+  //   coordinateY: 0,
+  //   date: "string",
+  //   imageType: "string",
+  //   title: inputText,
+  //   username: "wooyun"
+  // }
+
+  // console.log(newComment)
+  try {
+    const response = await api.post(`${baseURL}/diary`, newComment);
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+//다이어리 보기
+export const getDiary = async (username) => {
+  try {
+    const response = await axios.get(
+      `${baseURL}/diary/${username}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+
+
+//회원 수정
+export const patchfixUser = async (userData) => {
+  try {
+    const response = await axios.patch(
+      `${baseURL}/user/${username}`,
+      userData
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

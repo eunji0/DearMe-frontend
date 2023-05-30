@@ -189,6 +189,7 @@ export const Login = () => {
     e.preventDefault();
     try {
       const response = await postUsername(username, password);
+      alert('로그인에 성공하였습니다.')
       console.log(response);
       navigate("/")
 

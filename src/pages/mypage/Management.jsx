@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
-import { deleteFri, getFriList, getFriadd, postFriadd, username } from "../../api/api";
+import { getFriendAddList, deleteFri, getFriList, getFriSearch, postFriadd, username } from "../../api/api";
 import { useEffect } from 'react';
 
 const Box = styled.div`
@@ -345,41 +345,72 @@ height: 49px;
 
 //친구 찾기 변수
 let SearchFri = "";
-let friendname = "";
-
+//친구 목록 배열
+const myFriendListArr = ["","","","",""];
+//친구 추가 들어온것에 대한 배열 
+let myFriendFollowerList = [];
+let myFriendFollower = "";
 
 
 const Management = () => {
-  const [showRequest, setShowRequest] = useState(true);
-  const [showList1, setShowList1] = useState(true);
-  const [showList2, setShowList2] = useState(true);
-  const [showList3, setShowList3] = useState(true);
-  const [showList4, setShowList4] = useState(true);
-  const [showList5, setShowList5] = useState(true);
+  const [showRequest, setShowRequest] = useState(true); // 친구 요청 목록을 보여주는거 
+  const [showList1, setShowList1] = useState(true); // 친구 찾기 목록을 보여주는거 
+  
+  const [showMyFriend1, setShowMyFriendList1] = useState(true);
+  const [showMyFriend2, setShowMyFriendList2] = useState(true);
+  const [showMyFriend3, setShowMyFriendList3] = useState(true);
+  const [showMyFriend4, setShowMyFriendList4] = useState(true);
+  const [showMyFriend5, setShowMyFriendList5] = useState(true);
 
   const [addfriendname, setFriendname] = useState("");
   const [searchfriendname, searchFriendname] = useState("");
   
 
+  // 페이지 로드 시 실행되는 쿼리
+  useEffect(() => {
+    //친구 목록 업데이트에 대한 함수 
+    updateFriendListUI();
+    //친구 추가 요청에 대한 함수 
+    updateFriendAddListUI();
+  }, [username]);
 
+  // 친구 추가에 대한 Add
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
     try {
       const response = await postFriadd(username, addfriendname);
       console.log(response);
-     
+      updateFriendListUI();
     } catch (error) {
       console.error(error);
     }
   };
 
+  //친구 검색의 Add
+  const handleAddSearchList = async () => {
+    console.log("call handleAddSearchList");
+    const response = await postFriadd(username, SearchFri);
+    SearchFri = "";
+    updateFriendListUI();
+  };
+
+  //친구 요청의 Add
+  const handleAddRequest = async () => {
+    console.log("call handleAddRequest");
+    const response = await postFriadd(username, myFriendFollower);
+    myFriendFollower = "";
+    updateFriendListUI();
+  };
+
+  // 친구 찾기에 대한 함수
   const handleSubmitSearch = async (e) => {
     e.preventDefault();
     try {
-      const response = await getFriadd(username, searchfriendname);
-      SearchFri = response.result.data.opponent[0]
+      const response = await getFriSearch(searchfriendname);
+      SearchFri = response.result.data[0].username;
       console.log(response);
       console.log(SearchFri);
+      
       if(SearchFri.length == 0)
       {
         setShowList1(false);
@@ -393,60 +424,125 @@ const Management = () => {
       console.error(error);
     }
   };
-
-  // 페이지 로드 시 실행되는 쿼리
-  useEffect(() => {
-    const fetchData = () => {
-      try {
-        const response = getFriList(username);
-        console.log(response)
-        if (response && response.data) {
-          const dataSize = response.data.length;
-          const friendList = [];
   
-          for (let i = 0; i < dataSize; i++) {
-            const friendName = response.data[i].name;
-            friendList.push(friendName);
-          }
-  
-          console.log(friendList);
-          setShowList1(friendList); // Set the friendList array as the value for showList1
-        } else {
-          console.error("뭘까");
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    fetchData();
-  }, [username]);
-  
-
-    // json 데이터의 크기를 얻어와 그만큼 for문으로 반복해
-    // 친구목록 변수를 리스트로 만들고 해당 리스트에 이름을 각각 넣어주자!
-
-
-
+  /**************************************************
+  Delete 공통사항 
+  1. Delete 시 Query 전달후 목록에서 삭제하고 
+  2. 리스트를 업데이트시킴 
+  ***************************************************/
+  //친구 요청의 delete
+  //의문 -> 친구 요청이 들어옴 
+  //     -> 친구 승인을 하면 더이상 getFriendAddList 에서 해당 친구추가 요청이 들어오지 않음
+  //     -> 하지만 친구 거절을 하면 계속 getFriendAddList에서 해당 친구추가가 들어옴
+  //     -> 승인은 되는거 같은데 거절을 어케함...? 석범님에게 문의 
   const handleDeleteRequest = () => {
-    setShowRequest(false);
+    console.log("call handleDeleteRequest");
+    UpdateDeleteButtonUI();
   };
+
+  //친구 목록의 delete
   const handleDeleteList1 = () => {
-    setShowList1(false);
+    console.log("call handleDeleteList1");
+    deleteFri(username,myFriendListArr[0]);
+    UpdateDeleteButtonUI();
   };
   const handleDeleteList2 = () => {
-    setShowList2(false);
+    console.log("call handleDeleteList2");
+    deleteFri(username,myFriendListArr[1]);
+    UpdateDeleteButtonUI();
   };
   const handleDeleteList3 = () => {
-    setShowList3(false);
+    console.log("call handleDeleteList3");
+    deleteFri(username,myFriendListArr[2]);
+    UpdateDeleteButtonUI();
   };
   const handleDeleteList4 = () => {
-    setShowList4(false);
+    console.log("call handleDeleteList4");
+    deleteFri(username,myFriendListArr[3]);
+    UpdateDeleteButtonUI();
   };
   const handleDeleteList5 = () => {
-    setShowList5(false);
+    console.log("call handleDeleteList5");
+    deleteFri(username,myFriendListArr[4]);
+    UpdateDeleteButtonUI();
   };
 
+  // Delete 버튼 누를때 업데이트되는 항목들 
+  const UpdateDeleteButtonUI = () => {
+    setShowRequest(false);
+    setShowRequest(true);
+    setShowMyFriendList1(false);
+    setShowMyFriendList1(true);
+    setShowMyFriendList2(false);
+    setShowMyFriendList2(true);
+    setShowMyFriendList3(false);
+    setShowMyFriendList3(true);
+    setShowMyFriendList4(false);
+    setShowMyFriendList4(true);
+    setShowMyFriendList5(false);
+    setShowMyFriendList5(true);
+  }
+
+  // 친구추가 알람용 API
+  const updateFriendAddListUI = async () => {
+    try {
+      const response = await getFriendAddList(username);
+      const dataArray = response.result.data.opponent;
+      console.log(response);
+      console.log(dataArray.length);
+
+      for(let i=0; i<dataArray.length; i++)
+      {
+        myFriendFollowerList[i] = dataArray[i];
+      }
+      myFriendFollower = myFriendFollowerList[0];
+      setShowRequest(myFriendFollower);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // 친구 목록 UI 를 새로고침할때 호출 
+  const updateFriendListUI = async () => {
+    try {
+      const response = await getFriList(username);
+      // 친구가 몇명이있는지 알아오는 코드 
+      const dataArray = response.result.data.opponent;
+      // 해당 친구에 대한 리스트를 변수에 담는 과정 (최대5명까지)
+      for(let i =0; i<dataArray.length; i++)
+      {
+          myFriendListArr[i] = dataArray[i];
+          if(i===0)
+          {
+            setShowMyFriendList1(myFriendListArr[i]);
+          }
+          else if(i===1)
+          {
+            setShowMyFriendList2(myFriendListArr[i]);
+          }
+          else if(i===2)
+          {
+            setShowMyFriendList3(myFriendListArr[i]);
+          }
+          else if(i===3)
+          {
+            setShowMyFriendList4(myFriendListArr[i]);
+          }
+          else if(i===4)
+          {
+            setShowMyFriendList5(myFriendListArr[i]);
+          }
+
+          if(i==4)
+          {
+            break;
+          }
+      }
+      console.log(myFriendListArr);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div>
@@ -464,10 +560,10 @@ const Management = () => {
                 {showRequest && (
                 <Requestlistbox>
                   <Namebotton>
-                    <Buttontxt>{}님</Buttontxt>
+                    <Buttontxt>{myFriendFollower}님</Buttontxt>
                   </Namebotton>
                   <Buttons>
-                    <Approvebutton>
+                    <Approvebutton onClick={handleAddRequest}>
                       <Buttontxt>Approve</Buttontxt>
                     </Approvebutton>
                     <Deletebutton onClick={handleDeleteRequest}>
@@ -494,7 +590,7 @@ const Management = () => {
             </Addbox>
 
              <Addtxtbox>
-                  <Requesttxt>친구 검색</Requesttxt>
+                  <Requesttxt>친구 찾기</Requesttxt>
                 </Addtxtbox>
                 <Addbox>
                 <InnerBox>
@@ -513,8 +609,8 @@ const Management = () => {
                 <Namebotton>
                   <Buttontxt>{SearchFri}님</Buttontxt>
                 </Namebotton>
-                <Deletebutton onClick={handleDeleteList1}>
-                  <Buttontxt>Delete</Buttontxt>
+                <Deletebutton onClick={handleAddSearchList}>
+                  <Buttontxt>Add</Buttontxt>
                 </Deletebutton>
               </Friendlist>
               )}
@@ -525,50 +621,50 @@ const Management = () => {
                 <Friendlisttxt>친구 목록</Friendlisttxt>
               
               </Friendlisttxtbox>
-              {showList1 && (
+              {showMyFriend1 && (
               <Friendlist>
                 <Namebotton>
-                  <Buttontxt>{}님</Buttontxt>
+                  <Buttontxt>{myFriendListArr[0]}님</Buttontxt>
                 </Namebotton>
                 <Deletebutton onClick={handleDeleteList1}>
                   <Buttontxt>Delete</Buttontxt>
                 </Deletebutton>
               </Friendlist>
               )}
-               {showList2 && (
+               {showMyFriend2 && (
               <Friendlist>
                 <Namebotton>
-                  <Buttontxt>{}님</Buttontxt>
+                  <Buttontxt>{myFriendListArr[1]}님</Buttontxt>
                 </Namebotton>
                 <Deletebutton onClick={handleDeleteList2}>
                   <Buttontxt>Delete</Buttontxt>
                 </Deletebutton>
               </Friendlist>
               )}
-               {showList3 && (
+               {showMyFriend3 && (
               <Friendlist>
                 <Namebotton>
-                  <Buttontxt>{}님</Buttontxt>
+                  <Buttontxt>{myFriendListArr[2]}님</Buttontxt>
                 </Namebotton>
                 <Deletebutton onClick={handleDeleteList3}>
                   <Buttontxt>Delete</Buttontxt>
                 </Deletebutton>
               </Friendlist>
               )}
-               {showList4 && (
+               {showMyFriend4 && (
               <Friendlist>
                 <Namebotton>
-                  <Buttontxt>{}님</Buttontxt>
+                  <Buttontxt>{myFriendListArr[3]}님</Buttontxt>
                 </Namebotton>
                 <Deletebutton onClick={handleDeleteList4}>
                   <Buttontxt>Delete</Buttontxt>
                 </Deletebutton>
               </Friendlist>
               )}
-               {showList5 && (
+               {showMyFriend5 && (
               <Friendlist>
                 <Namebotton>
-                  <Buttontxt>{}님</Buttontxt>
+                  <Buttontxt>{myFriendListArr[4]}님</Buttontxt>
                 </Namebotton>
                 <Deletebutton onClick={handleDeleteList5}>
                   <Buttontxt>Delete</Buttontxt>
