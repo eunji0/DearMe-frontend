@@ -247,7 +247,8 @@ const Signup = () => {
             <AgreeTxt fontSize="20px">
               <CheckBox type="checkbox"/>
               이용약관 동의
-              <img alt="이용약관 동의" src={infoSrc}/>
+              <img alt="이용약관 동의" 
+               />
             </AgreeTxt>
             <AgreeTxt fontSize="20px">
               <CheckBox type="checkbox"/>

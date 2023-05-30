@@ -82,6 +82,7 @@ const Button = styled.button`
 
 const Diaryimg2Div = styled.div`
 margin-top: 20px;
+
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -93,7 +94,6 @@ background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
 const DiaryimgstickerDiv = styled.div`
 display: flex;
-
 flex-direction: row;
 justify-content: center;
 align-items: flex-start;
@@ -102,9 +102,10 @@ gap: 10px;
 width: 310px;
 height: 110px;
 img {
-  float: left;
+ float: left;
 }
 overflow: hidden;
+margin: 0 auto;
 }`
 
 const Imgstickers1 = styled.div`

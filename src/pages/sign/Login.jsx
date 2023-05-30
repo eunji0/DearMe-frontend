@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
+import { postUsername } from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
 const LogBox = styled.div`
 display: flex;
@@ -154,7 +156,7 @@ const CheckBox = styled.input`
   }
 `;
 
-const LogBtn = styled.div`
+const LogBtn = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: center;
@@ -179,24 +181,20 @@ color: ${COLORS.WHITE};
 
 
 export const Login = () => {
+  const [username, getUsername] = useState("");
+  const [password, getPassword] = useState("");
+   const navigate = useNavigate();
 
-  const LoginData = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const userId = await getUserId(userId);
-      console.log(userId.result.data);
+      const response = await postUsername(username, password);
+      console.log(response);
+      navigate("/")
+
     } catch (error) {
       console.error(error);
     }
-  };
-
-  LoginData();
-
-  const [username, getUsername] = useState("");
-  const [password, getPassword] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(`Username: ${username}, Password: ${password}`);
   };
 
 
@@ -205,7 +203,7 @@ export const Login = () => {
       <form onSubmit={handleSubmit}>
         <LogBox>
           <LogDiv>
-            <TxtDiv>회원가입</TxtDiv>
+            <TxtDiv>로그인</TxtDiv>
           </LogDiv>
         </LogBox>
         <InputBox>
@@ -214,8 +212,8 @@ export const Login = () => {
               <TitleBox>아이디 :</TitleBox>
               <InBox
                 type="text"
-                id="userId"
-                value={userId}
+                id="username"
+                value={username}
                 onChange={(e) => getUsername(e.target.value)} />
             </InnerBox>
             <InnerBox>
@@ -229,11 +227,9 @@ export const Login = () => {
             
           </InputLayout>
           
-          <LogBtn>로그인</LogBtn>
+          <LogBtn onClick={handleSubmit}>로그인</LogBtn>
         </InputBox>
 
-        
-       
       </form>
     </div>
   )
