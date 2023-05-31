@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import infoSrc from "../../assets/svg/angleRight.svg";
-import { postUsername } from "../../api/api";
+import {patchfixUser} from "../../api/api"
 import { useNavigate } from "react-router-dom";
 
-const LogBox = styled.div`
+const SignBox = styled.div`
 display: flex;
 flex-direction: column;
 align-items: center;
 padding: 60px 10px 30px;
 gap: 10px;`
 
-const LogDiv = styled.div`
+const SignDiv = styled.div`
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -23,10 +22,9 @@ border-bottom: 2px solid ${COLORS.Orange};
 `
 
 const TxtDiv = styled.div`
-width:100%;
 display: flex;
 flex-direction: row;
-align-items: center;
+align-items: flex-start;
 padding: 10px 15px;
 gap: 10px;
 font-family: 'Roboto';
@@ -34,7 +32,7 @@ font-style: normal;
 font-weight: 700;
 font-size: 20px;
 line-height: 23px;
-color: ${COLORS.BLACK};
+color: ${COLORS.Orange};
 `
 
 const InputBox = styled.div`
@@ -108,7 +106,7 @@ align-items: flex-start;
 padding: 20px 30px;
 gap: 10px;
 width: 660px;
-background: ${COLORS.Light_Orange};`
+background: ${COLORS.Orange};`
 
 const AgreeTxt = styled.div`
 display: flex;
@@ -156,8 +154,7 @@ const CheckBox = styled.input`
   }
 `;
 
-const LogBtn = styled.div`
->>>>>>> af1386d14d8699e63f94feee82d7fc69b9cece99
+const SignBtn = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: center;
@@ -180,44 +177,50 @@ color: ${COLORS.WHITE};
 }
 `
 
-
-export const Login = () => {
-  const [username, getUsername] = useState("");
-  const [password, getPassword] = useState("");
-   const navigate = useNavigate();
+const Profile = () => {
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await postUsername(username, password);
-  
-      navigate("/")
+    console.log(`Username: ${userId}, Password: ${password}`);
 
+    try {
+      // fixUser 함수의 정의와 import 구문이 필요합니다.
+      const response = await patchfixUser({
+        email: email,
+        password: password,
+        phone: number,
+        username: userId,
+      });
+      navigate("/");
+      console.log(response);
+      alert('프로필 수정에 성공하였습니다.')
     } catch (error) {
-      alert('아이디 혹은 비밀번호가 틀리셨습니다.')
       console.error(error);
     }
   };
 
-
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <LogBox>
-          <LogDiv>
-            <TxtDiv>로그인</TxtDiv>
-            <TxtDiv>회원가입</TxtDiv>
-          </LogDiv>
-        </LogBox>
+      <form>
+        <SignBox>
+          <SignDiv>
+            <TxtDiv>프로필 수정</TxtDiv>
+          </SignDiv>
+        </SignBox>
         <InputBox>
           <InputLayout>
             <InnerBox>
               <TitleBox>아이디 :</TitleBox>
               <InBox
                 type="text"
-                id="username"
-                value={username}
-                onChange={(e) => getUsername(e.target.value)} />
+                id="userId"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)} />
             </InnerBox>
             <InnerBox>
               <TitleBox>비밀번호 :</TitleBox>
@@ -225,17 +228,30 @@ export const Login = () => {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => getPassword(e.target.value)} />
+                onChange={(e) => setPassword(e.target.value)} />
             </InnerBox>
-            
+            <InnerBox>
+              <TitleBox>이메일 :</TitleBox>
+              <InBox
+                type="text"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} />
+            </InnerBox>
+            <InnerBox>
+              <TitleBox>전화번호 :</TitleBox>
+              <InBox
+                type="text"
+                id="number"
+                value={number}
+                onChange={(e) => setNumber(e.target.value)} />
+            </InnerBox>
           </InputLayout>
-          
-          <LogBtn onClick={handleSubmit}>로그인</LogBtn>
+          <SignBtn type="submit"  onSubmit={handleSubmit}>저장</SignBtn>
         </InputBox>
-
       </form>
     </div>
   )
 }
 
-export default Login;
+export default Profile;

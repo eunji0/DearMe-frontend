@@ -5,6 +5,11 @@ export const COLORS = {
   GRAY: "rgba(201, 201, 201, 1)",
   BLACK: "rgba(0, 0, 0, 1)",
   WHITE: "rgba(255, 255, 255, 1)",
+  PINK: "rgba(247, 203, 203, 1)",
+  BLUE: "rgba(188, 211, 255, 1)",
+  PURPLE: "rgba(197, 187, 255, 1)",
+  GREEN: "rgba(163, 216, 181, 1)"
+
 };
 
 export default COLORS;
