@@ -16,7 +16,9 @@ import settingSrc from "../../assets/svg/setting.svg";
 import starSrc from "../../assets/svg/star.svg";
 import trashSrc from "../../assets/svg/trash.svg";
 import tvSrc from "../../assets/svg/tv.svg";
-import { getDiary, StoreDiary, username } from "../../api/api";
+import { getDiary, StoreDiary} from "../../api/api";
+import { usernameState } from "../../atoms/atoms";
+import { useRecoilValue } from "recoil";
 
 
 const DiarybigDiv = styled.div`
@@ -36,10 +38,10 @@ justify-content: center;
 align-items: center;
 padding: 70px 10px;
 gap: 10px;
-height: 1500px
+height: 1500px;
 width: 1700px;
-;
 `
+
 const DiaryBox = styled.div`
 display: flex;
 flex-direction: row;
@@ -92,11 +94,8 @@ align-items: center;
 padding-left: 20px;
 width: 310px;
 height: 110px;
-img {
- float: left;
-}
-overflow: hidden;
-}`
+`
+
 const Diaryimgsticker2Div = styled.div`
 display: flex;
 flex-direction: row;
@@ -105,14 +104,10 @@ align-items: center;
 width: 310px;
 height: 110px;
 margin-left: -30px;
-img {
- float: left;
-}
-overflow: hidden;
-}`
+`
 
 const Imgstickers1 = styled.div`
-margine-top : 10px;
+margin-top : 10px;
 width: 300px;
 height: 120px;
 `
@@ -403,8 +398,8 @@ height: 110px;
 const Dakkusticker = styled.img`
 width: 90px;
 height: 90px;
-background: url(Lovepik_com-828892411-Common Simple Wind Linear App Small Icon icon.png);
 `
+
 const DakkuPage = styled.div`
 display:flex;
 flex-direction: column;`
@@ -447,7 +442,7 @@ flex-direction: column;`
     const [showTitleDateArr, setshowTitleDateArr] = useState(["","",""]);
     //상단 3개 다이어리 이미지 배열
     const [showTitleImageArr, setshowTitleImageArr] = useState(["","",""]);
-
+    const username = useRecoilValue(usernameState);
     // 타이틀 다이어리 UI 갱신 
     const [showDiary1, setshowDiary1] = useState(true);
     const [showDiary2, setshowDiary2] = useState(true);

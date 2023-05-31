@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import {patchfixUser} from "../../api/api"
+import {updateUserProfile} from "../../api/api"
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
+import axios from "axios";
 
 const SignBox = styled.div`
 display: flex;
@@ -121,38 +124,6 @@ line-height: 23px;
 color:${COLORS.BLACK};
 `
 
-const CheckBox = styled.input`
-  position: relative;
-  width: 25px;
-  height: 25px;
-  appearance: none;
-  border: 2px solid ${COLORS.Orange};
-  background-color: ${COLORS.WHITE};
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:checked {
-    background-color: ${COLORS.Orange};
-    color: ${COLORS.Orange};
-  }
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 7px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 4px 4px 0;
-    transform: rotate(45deg);
-    display: none;
-  }
-
-  &:checked:after {
-    display: block;
-  }
-`;
 
 const SignBtn = styled.button`
 display: flex;
@@ -181,47 +152,41 @@ const Profile = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [number, setNumber] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
+  const username = "string1";
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Username: ${userId}, Password: ${password}`);
-
+  
     try {
-      // fixUser 함수의 정의와 import 구문이 필요합니다.
-      const response = await patchfixUser({
-        email: email,
-        password: password,
-        phone: number,
-        username: userId,
-      });
-      navigate("/");
-      console.log(response);
-      alert('프로필 수정에 성공하였습니다.')
+      await updateUserProfile(email, phone, password, username);
+      alert('프로필이 수정되었습니다.');
     } catch (error) {
       console.error(error);
+      alert('프로필 수정에 실패했습니다.');
     }
   };
 
   return (
-    <div>
-      <form>
-        <SignBox>
+    <div style={{width: "100%"}}>
+      <form style={{width: "100%"}} onSubmit={handleSubmit}>
+        <SignBox style={{width: "100%"}}>
           <SignDiv>
             <TxtDiv>프로필 수정</TxtDiv>
           </SignDiv>
         </SignBox>
         <InputBox>
           <InputLayout>
-            <InnerBox>
+            {/* <InnerBox>
               <TitleBox>아이디 :</TitleBox>
               <InBox
                 type="text"
                 id="userId"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)} />
-            </InnerBox>
+            </InnerBox> */}
             <InnerBox>
               <TitleBox>비밀번호 :</TitleBox>
               <InBox
@@ -243,11 +208,12 @@ const Profile = () => {
               <InBox
                 type="text"
                 id="number"
-                value={number}
-                onChange={(e) => setNumber(e.target.value)} />
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)} />
             </InnerBox>
           </InputLayout>
-          <SignBtn type="submit"  onSubmit={handleSubmit}>저장</SignBtn>
+          <SignBtn type="button" onClick={handleSubmit}>저장</SignBtn>
+
         </InputBox>
       </form>
     </div>

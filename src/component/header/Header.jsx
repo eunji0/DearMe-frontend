@@ -5,6 +5,8 @@ import logoSrc from "../../assets/svg/logo.svg";
 import alarmSrc from "../../assets/svg/alarm.svg";
 import myProfileSrc from "../../assets/svg/myProfile.svg";
 import { Link } from "react-router-dom";
+import { usernameState } from "../../atoms/atoms";
+import { useRecoilValue } from "recoil";
 
 
 const All = styled.div`
@@ -48,14 +50,17 @@ height: 50px;
 `
 
 const Header = () => {
+	let year, month, day;
+	const username = useRecoilValue(usernameState);
+	console.log(username)
 	return (
 			<All>
-				<Link to="/">
+				<Link to={`/timeschedule/${username}/${year}/${month}/${day}`}>
 					<img alt="logo" src={logoSrc}/>
 				</Link>
 				<div>
 					<MiddleBox>
-						<MiddleTxt>OO's DearMe</MiddleTxt>
+						<MiddleTxt>은지's DearMe</MiddleTxt>
 					</MiddleBox>
 				</div>
 				<div>
@@ -63,9 +68,9 @@ const Header = () => {
 						<Link to="/notice">
 							<img alt="alarm" src={alarmSrc}/>
 						</Link>
-						<div>
+						<Link to="/timecapsules/:id">
 							<img alt="myProfile" src={myProfileSrc}/>
-						</div>
+						</Link>
 					</MyPageBox>
 				</div>
 			</All>

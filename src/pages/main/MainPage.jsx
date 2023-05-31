@@ -4,9 +4,9 @@ import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/mainLeft.svg";
 import rightSrc from "../../assets/svg/mainRight.svg";
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import DetailPage from "../detail/DetailPage";
-import { baseURL, username, getDiaryByUsername } from "../../api/api";
+import { useNavigate} from 'react-router-dom';
+import { fetchSchedule } from "../../api/api";
+import Calendar from "../../component/calendar/Calendar";
 
 const TitleBox = styled.div`
 display: flex;
@@ -101,49 +101,25 @@ font-size: 16px;
 line-height: 19px;
 color: ${COLORS.BLACK};`
 
-const List = styled.div`
-display: flex;
-flex-direction: row;
-justify-content: left;
-align-items: center;
-padding: 5px 10px;
-width: 100%;
-overflow: hidden;
-height: 24px;
-background: ${COLORS.Orange};
-border-radius: 5px;
-`
 
-const LinkStyle = styled(Link)`
-text-decoration: none;`
-
-const SlidePage = styled.div`
-  position: fixed;
-  top: 0;
-  right: ${({ open }) => (open ? '0' : '-100%')};
-  bottom: 0;
-  width: 705px;
-  height: 100vh;
-  z-index: 100;
-  background-color: ${COLORS.Orange};
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: right 0.3s ease-in-out;
-`;
 
 
 const MainPage = () => {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const [weeklyDates, setWeeklyDates] = useState([]);
-  const [scheduleData, setScheduleData] = useState({});
   const containerRef = useRef(null);
-  const [detailOn, setDetailOn] = useState(false);
-  const startHour = 0;
-  const endHour = 24;
   const [diaryData, setDiaryData] = useState([]);
-
-  const handleDetailPageClose = () => {
-    setDetailOn(false);
+  const [dates, setDates] = useState([]); // 추가: dates 상태 변수
+  const getCurrentUsername = () => {
+    const url = new URL(window.location.href);
+    const pathname = url.pathname;
+    const parts = pathname.split('/');
+    const username = parts[2];
+    return username;
   };
+  
+  const username = getCurrentUsername();
+
 
   useEffect(() => {
     const calculateWeeklyDates = () => {
@@ -156,18 +132,20 @@ const MainPage = () => {
 
       const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
       const dates = [];
+      setDates(dates);
+
       let currentDay = new Date(startOfWeek);
       while (currentDay <= endOfWeek) {
         dates.push(new Date(currentDay));
         currentDay.setDate(currentDay.getDate() + 1);
       }
 
-
       setWeeklyDates(dates);
     };
 
     calculateWeeklyDates();
   }, []);
+
 
   useEffect(() => {
     const container = containerRef.current;
@@ -178,42 +156,80 @@ const MainPage = () => {
 
   const scrollContainerHeight = Math.floor((window.innerHeight * 3) / 4);
 
+  // const goToWeek = (offset) => {
+  //   const newWeekStartDate = new Date(weeklyDates[0]);
+  //   newWeekStartDate.setDate(newWeekStartDate.getDate() + offset * 7);
+
+  //   const newWeekDates = [];
+  //   let currentDay = new Date(newWeekStartDate);
+  //   for (let i = 0; i < 7; i++) {
+  //     newWeekDates.push(new Date(currentDay));
+  //     currentDay.setDate(currentDay.getDate() + 1);
+  //   }
+
+  //   setWeeklyDates(newWeekDates);
+  //   setDates(newWeekDates);
+  // };
   const goToWeek = (offset) => {
     const newWeekStartDate = new Date(weeklyDates[0]);
     newWeekStartDate.setDate(newWeekStartDate.getDate() + offset * 7);
-
+  
     const newWeekDates = [];
     let currentDay = new Date(newWeekStartDate);
     for (let i = 0; i < 7; i++) {
       newWeekDates.push(new Date(currentDay));
       currentDay.setDate(currentDay.getDate() + 1);
     }
-
+  
     setWeeklyDates(newWeekDates);
+    setDates(newWeekDates);
+  
+    const navigate = useNavigate();
+    const url = new URL(window.location.href);
+    const parts = url.pathname.split('/');
+    const username = parts[2];
+    let year = newWeekDates[0].getFullYear();
+    let month = newWeekDates[0].getMonth() + 1;
+    let day = newWeekDates[0].getDate();
+  
+    const newUrl = `/timeschedule/${username}/${year}/${month}/${day}`;
+    navigate(newUrl);
   };
-
-  //데이터 가져오기
-  const fetchScheduleData = async () => {
-    try {
-      const diaryData = await getDiaryByUsername(username);
-      console.log(diaryData.result.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  fetchScheduleData();
 
   useEffect(() => {
-    fetchScheduleData();
+    let year, month, day;
+
+    if (weeklyDates.length > 0) {
+      const date = weeklyDates[0].toLocaleDateString();
+      const [yearStr, monthStr, dayStr] = date.split('.').map(Number);
+
+      year = parseInt(yearStr);
+      month = parseInt(monthStr);
+      day = parseInt(dayStr);
+    } else {
+    }
+
+    if (year && month && day) {
+      const fetchData = async () => {
+        try {
+          const schedule = await fetchSchedule(username, year, month, day);
+          console.log(username)
+          setDiaryData(schedule.result.data);
+        } catch (error) {
+          // 오류 처리
+          console.log(error)
+        }
+      };
+
+      fetchData();
+    }
   }, [weeklyDates]);
 
 
+
   return (
-    <div style={{ marginBottom: "50px" }}>
-      <TitleBox>
-        Time Schedule
-      </TitleBox>
+    <div style={{ marginBottom: '50px' }}>
+      <TitleBox>Time Schedule</TitleBox>
       <BtnLayout>
         {weeklyDates.length > 0 && (
           <DateBox>
@@ -225,7 +241,7 @@ const MainPage = () => {
           <img alt="next" src={rightSrc} onClick={() => goToWeek(1)} />
         </BtnBox>
       </BtnLayout>
-  
+
       <WeekLayout>
         <div style={{ flex: 1, textAlign: 'center' }} />
         {daysOfWeek.map((day) => (
@@ -234,105 +250,19 @@ const MainPage = () => {
           </WeekBox>
         ))}
       </WeekLayout>
-  
+
+
       <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
-          {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
-            const hour = startHour + hourIndex;
-            return (
-              <div key={hour} style={{ display: 'flex' }}>
-                <HourBox style={{ flex: 1, textAlign: 'center' }}>
-                  {hour}:00
-                </HourBox>
-  
-                {daysOfWeek.map((day, dayIndex) => {
-                  const date = weeklyDates[dayIndex]?.toISOString().slice(0, 10) || null;
-                  const daySchedule = scheduleData[date] || [];
-                  const diaryItem = diaryData.find(item => item.coordinateX === dayIndex && item.coordinateY === hourIndex);
-                  const hasDiary = !!diaryItem;
-  
-                  return (
-                    <ListBox
-                      onClick={() => setDetailOn(!detailOn)}
-                      key={`${day}-${hour}`}
-                      style={{
-                        gridColumnStart: dayIndex + 1,
-                        gridRowStart: hourIndex + 1,
-                        backgroundColor: hasDiary ? 'lightblue' : 'white'
-                      }}
-                    >
-                      {daySchedule.map((schedule) => (
-                        <List key={schedule}>{schedule}</List>
-                      ))}
-                    </ListBox>
-                  );
-                })}
-              </div>
-            );
-          })}
+
+          <Calendar username={username} diaryData={diaryData}
+            dates={dates}
+          />
         </div>
       </div>
-      {detailOn && (
-        <SlidePage open={detailOn} className={detailOn ? "slide-in" : "slide-out"}>
-          <DetailPage onClose={handleDetailPageClose} />
-        </SlidePage>
-      )}
     </div>
   );
 };
 
 export default MainPage;
 
-  // const fetchScheduleData = () => {
-  //   // 더미 일정 데이터
-  //   const dummyScheduleData = {
-  //     '2023-05-20-9:00': ['Meeting 1', 'Meeting 2'],
-  //     '2023-05-21-9:00': ['Meeting 1', 'Meeting 2'], // 일요일
-  //     '2023-05-22-9:00': ['Task 1', 'Task 2'], // 월요일
-  //     '2023-05-23-9:00': ['Appointment'], // 화요일
-  //     '2023-05-24-9:00': [], // 수요일
-  //     '2023-05-25-9:00': ['Event'], // 목요일
-  //   };
-
-  //   // 주간 날짜 범위에 해당하는 일정 데이터를 가져옵니다.
-  //   const filteredScheduleData = weeklyDates.reduce((result, date) => {
-  //     const formattedDate = date.toISOString().slice(0, 10);
-  //     if (formattedDate in dummyScheduleData) {
-  //       result[formattedDate] = dummyScheduleData[formattedDate];
-  //     } else {
-  //       result[formattedDate] = [];
-  //     }
-  //     return result;
-  //   }, {});
-
-  //   setScheduleData(filteredScheduleData);
-  // };
-
-
-  
-//   <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
-//   <div>
-//     {[...Array(endHour - startHour + 1)].map((_, hourIndex) => {
-//       const hour = startHour + hourIndex;
-//       return (
-//         <div key={hour} style={{ display: 'flex' }}>
-//           <HourBox style={{ flex: 1, textAlign: 'center' }}>
-//             {hour}:00
-//           </HourBox>
-
-//           {daysOfWeek.map((day, dayIndex) => {
-//             const date = weeklyDates[dayIndex]?.toISOString().slice(0, 10) || null;
-//             const daySchedule = scheduleData[date] || [];
-//             return (
-//               <ListBox onClick={() => setDetailOn(!detailOn)} key={`${day}-${hour}`}>
-//                 {daySchedule.map((schedule) => (
-//                   <List key={schedule}>{schedule}</List>
-//                 ))}
-//               </ListBox>
-//             );
-//           })}
-//         </div>
-//       );
-//     })}
-//   </div>
-// </div>

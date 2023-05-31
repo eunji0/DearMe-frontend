@@ -238,7 +238,7 @@ const Signup = () => {
   
       console.log(response);
   
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error(error);
     }
@@ -353,12 +353,7 @@ const Signup = () => {
                 onChange={handleTermsAgreedChange}
               />
               이용약관 동의
-<<<<<<< HEAD
-              <img alt="이용약관 동의" 
-               />
-=======
               <img alt="이용약관 동의" src={infoSrc} />
->>>>>>> af1386d14d8699e63f94feee82d7fc69b9cece99
             </AgreeTxt>
             <AgreeTxt fontSize="20px">
               <CheckBox

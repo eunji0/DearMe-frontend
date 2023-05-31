@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import { getFriendAddList, deleteFri, getFriList, getFriSearch, postFriadd, username } from "../../api/api";
+import { getFriendAddList, deleteFri, getFriList, getFriSearch, postFriadd} from "../../api/api";
 import { useEffect } from 'react';
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
 
 const Box = styled.div`
   display: flex;
@@ -250,7 +252,6 @@ const Searchbutton = styled.button`
   border: none;
   justify-content: center;
    white-space: nowrap;
-  justify-content:
 
   &:active {
     background: ${COLORS.Orange};
@@ -339,7 +340,7 @@ const Management = () => {
   const [showMyFriend5, setShowMyFriendList5] = useState(true);
   const [addfriendname, setFriendname] = useState("");
   const [searchfriendname, searchFriendname] = useState("");
-  
+  const username = useRecoilValue(usernameState);
 
   // 페이지 로드 시 실행되는 쿼리
   useEffect(() => {

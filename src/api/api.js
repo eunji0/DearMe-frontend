@@ -1,30 +1,40 @@
 import axios from 'axios';
 export const baseURL = 'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80';
-export const username = "wooyun";
+// export const username = "string11";
 
-const api = axios.create({
-  baseURL: baseURL,
-});
 
 //로그인 데이터 post
 export const postUsername = async (username, password) => {
-  try {
-    const response = await api.post(`${baseURL}/user/login`, {
-      username: username,
-      password: password,
-    })} catch (error) {
-      throw new Error(error.message);
-    }
+  const requestData = {
+    username: username,
+    password: password
   };
 
-//다이어리 데이터 가져오기
-export const getDiaryByUsername = async (username) => {
   try {
-    const encodedUsername = encodeURIComponent(username);
-    const response = await api.get(`/diary/${encodedUsername}`);
-    return response.data;
+    const response = await axios.post(`${baseURL}/user/login`, requestData);
+    // console.log('로그인 성공:', response.data);
+    // 로그인 성공 시 필요한 처리를 진행합니다.
   } catch (error) {
-    throw new Error(error.message);
+    console.error('로그인 실패:', error);
+    // 로그인 실패 시 필요한 처리를 진행합니다.
+  }
+};
+
+//다이어리 데이터 가져오기
+export const fetchTimeSchedule = async (day, month, year, username) => {
+  try {
+    const response = await axios.get(`${baseURL}/timeschedule/str/${year}/${month}/${day}`, {
+      params: {
+        username: username
+      }
+    });
+
+    // API 응답 데이터 처리
+    const data = response.data;
+    console.log(data)
+    return data;
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -87,7 +97,7 @@ export const getFriendAddList = async (username) => {
     me: username,
   };
   try {
-    const response = await api.get(`${baseURL}/friend/yet/${username}`, newComment);
+    const response = await axios.get(`${baseURL}/friend/yet/${username}`, newComment);
     return response.data;
   } catch (error) {
     throw new Error(error.message);
@@ -163,15 +173,35 @@ export const StoreDiary = async (username, JsonData) => {
 
 
 //회원 수정
-export const patchfixUser = async (userData) => {
+// export const patchfixUser = async (userData) => {
+//   const { email, password, phone, username } = userData;
+
+//   try {
+//     const response = await axios.patch(
+//       `http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/user/${username}`,
+//       { email, password, phone, username } // Include the 'username' in the request body
+//     );
+
+//     console.log(response);
+//     return response.data; // Return the response data if needed
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+// };
+export const updateUserProfile = async (email, phone, password, username) => {
+  const requestUrl = `http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/user/${username}?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&phone=${encodeURIComponent(phone)}&username=${encodeURIComponent(username)}`;
+
   try {
-    const response = await axios.patch(
-      `${baseURL}/user/${username}`,
-    )  } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    const response = await axios.patch(requestUrl);
+    console.log(response);
+    return response.data; // Optional: Return the response data if needed
+  } catch (error) {
+    console.error('프로필 수정 실패:', error);
+    throw error;
   }
+};
+
 
 //회원가입
 export const registerUser = async (userData) => {
@@ -185,5 +215,107 @@ export const registerUser = async (userData) => {
   } catch (error) {
     console.error(error);
     throw error;
+  }
+};
+
+//타임캡슐 리스트
+export const getTimecapsules = async (username) => {
+  try {
+    const response = await axios.get(`${baseURL}/timecapsule/${username}`);
+    // 응답 데이터 처리
+    const data = response.data.result.data;
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+//타임캡슐 삭제
+export const deleteTimeCapsule = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/timecapsule/${id}`);
+    // 성공적으로 삭제되었을 때의 처리
+    console.log('타임캡슐이 삭제되었습니다.');
+  } catch (error) {
+    // 삭제 실패 시의 처리
+    console.error(error);
+  }
+};
+
+//일정가져오기
+export const fetchSchedule = async (username, year, month, day) => {
+  try {
+    const response = await axios.get(`${baseURL}/timeschedule/${username}/${year}/${month}/${day}`);
+
+    const schedule = response.data;
+    return schedule;
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//하루일정가져오기
+export const fetchTodoList = async (username, yearStr, monthStr, dayStr) => {
+  try {
+    const requestUrl = `${baseURL}/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
+    const response = await axios.get(requestUrl);
+    return response.data.result.data.toDo;
+  } catch (error) {
+    console.error('Failed to fetch todo list:', error);
+    return [];
+  }
+};
+
+export const fetchTodoList2 = async (username, yearStr, monthStr, dayStr) => {
+  try {
+    const requestUrl = `${baseURL}/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
+    const response = await axios.get(requestUrl);
+    return response.data.result.data;
+  } catch (error) {
+    console.error('Failed to fetch todo list:', error);
+    return [];
+  }
+};
+
+//스케줄 날짜 등록
+export const addSchedule = async (selectedDate) => {
+  try {
+    const requestData = {
+      date: selectedDate,
+      today: "string",
+      tomorrow: "string",
+      userName: username,
+    };
+
+    const response = await fetch(`${baseURL}/timeschedule/day`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      // console.log(responseData.result.data);
+      return responseData;
+    } else {
+      console.log('스케줄 등록에 실패하였습니다.');
+    }
+  } catch (error) {
+    console.error('API 호출에 실패하였습니다.', error);
+  }
+};
+
+//삭제하기
+export const deleteTodo = async (id) => {
+  try {
+    const requestUrl = `${baseURL}/timeschedule/todo/${id}`;
+    await axios.delete(requestUrl);
+    console.log('Todo deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete todo:', error);
   }
 };

@@ -11,8 +11,6 @@ import Noticed from './pages/mypage/Noticed';
 import SideBar from './component/SideBar';
 import Profile from './pages/mypage/Profile';
 import Management from './pages/mypage/Management';
-import Header from './component/header/Header';
-import Signup from './pages/sign/Signup';
 
 function App() {
 
@@ -23,19 +21,17 @@ function App() {
 				<BrowserRouter>
 				<Header/>
 				<Routes>
-					<Route path='/' element={<MainPage/>}/>
-					<Route path='/detail' element={<DetailPage/>}/>
-					<Route path='/signup' element={<Signup/>}/>
-					<Route path='/login' element={<Login/>}/>
+						<Route path='/timeschedule/:username/:year/:month/:day' element={<MainPage />} />
+						<Route path='/signup' element={<Signup />} />
+						<Route path='/login' element={<Login/>}/>
 					<Route path='/dakku' element={<Dakku/>}/>
-					<Route path='/timecapsules' element={<TimeCapsules />} />
-					<Route element={<MypageLayout />}>
-					<Route path="/notice" element={<Noticed />} />
-						<Route path="/profile" element={<Profile />} />
+						<Route path='/timecapsules/:id' element={<TimeCapsules />} />
+						<Route element={<MypageLayout />}>
+							<Route path="/notice" element={<Noticed />} />
+							<Route path="/profile" element={<Profile />} />
 						<Route path="/management" element={<Management />} />
-					</Route>
-					
-				</Routes>
+						</Route>
+					</Routes>
 				
 				</BrowserRouter>
 			</div>

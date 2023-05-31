@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import pencilSrc from "../../assets/svg/pencil.svg";
-import dummy from "../../assets/dummy";
+import WriteTime from "../../component/modal/WriteTime";
+import { getTimecapsules, deleteTimeCapsule } from "../../api/api";
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
+
 
 const Layout = styled.div`
 display: flex;
@@ -137,6 +141,7 @@ width: 100%;
 `
 
 const BtnBox = styled.div`
+cursor: pointer;
 display: flex;
 flex-direction: row;
 align-items: center;
@@ -151,32 +156,79 @@ line-height: 16px;
 color:${COLORS.BLACK};
 `
 
+const ModalWrapper = styled.div`
+  position: fixed;
+  top: -10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+	background-color: ${COLORS.WHITE};
+`
+
 const TimeCapsules = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [indata, setInDate] = useState([]);
+  const username = "string11";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getTimecapsules(username);
+        setInDate(data);
+        console.log(data)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteTimeCapsule(id);
+      console.log('타임캡슐이 삭제되었습니다.');
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const reversedData = indata.slice().reverse();
+  // console.log(reversedData)
+
   return (
     <div>
       <Layout>
         <Box>
           <TitleBox>
             <InTitleBox>Open my time capsules</InTitleBox>
-            <WriteBox>
+            <WriteBox onClick={() => setShowModal(!showModal)}>
               <img alt="타임캡슐 만들기" src={pencilSrc} />
             </WriteBox>
+            {
+              showModal &&
+              <ModalWrapper>
+                <WriteTime onClose={() => setShowModal(false)} />
+              </ModalWrapper>
+
+            }
           </TitleBox>
           <ListLayout>
             {
-              dummy.map((item, index) => (
-                <ListBox>
+              reversedData.map((item, index) => (
+                <ListBox key={index}>
                   <DateLayout>
                     <DateBox>
-                      {item.date}
+                    {item.toDay} -&gt; {item.nextDay}
                     </DateBox>
                   </DateLayout>
                   <TextBox>
-                    <Text>{item.diary}</Text>
+                    <Text>{item.content}</Text>
                   </TextBox>
                   <BtnLayout>
-                    <BtnBox>Delete</BtnBox>
-                    <BtnBox>Save</BtnBox>
+                    <BtnBox onClick={() => handleDelete(item.timeCapsuleId)}>Delete</BtnBox>
                   </BtnLayout>
                 </ListBox>
               ))
