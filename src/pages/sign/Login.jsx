@@ -93,69 +93,6 @@ border-radius: 20px;
 border: none;
 `
 
-const AgreeLayout = styled.div`
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 10px 10px 30px;
-gap: 20px;`
-
-const AgreeBox = styled.div`
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: flex-start;
-padding: 20px 30px;
-gap: 10px;
-width: 660px;
-background: ${COLORS.Light_Orange};`
-
-const AgreeTxt = styled.div`
-display: flex;
-flex-direction: row;
-align-items: center;
-padding: 5px 10px;
-gap: 10px;
-font-style: normal;
-font-weight: 400;
-font-size: ${(props)=>props.fontSize};
-line-height: 23px;
-color:${COLORS.BLACK};
-`
-
-const CheckBox = styled.input`
-  position: relative;
-  width: 25px;
-  height: 25px;
-  appearance: none;
-  border: 2px solid ${COLORS.Orange};
-  background-color: ${COLORS.WHITE};
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:checked {
-    background-color: ${COLORS.Orange};
-    color: ${COLORS.Orange};
-  }
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 7px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 4px 4px 0;
-    transform: rotate(45deg);
-    display: none;
-  }
-
-  &:checked:after {
-    display: block;
-  }
-`;
-
 const LogBtn = styled.button`
 display: flex;
 flex-direction: row;
@@ -189,11 +126,11 @@ export const Login = () => {
     e.preventDefault();
     try {
       const response = await postUsername(username, password);
-      alert('로그인에 성공하였습니다.')
-      console.log(response);
+  
       navigate("/")
 
     } catch (error) {
+      alert('아이디 혹은 비밀번호가 틀리셨습니다.')
       console.error(error);
     }
   };

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import infoSrc from "../../assets/svg/angleRight.svg";
 import {patchfixUser} from "../../api/api"
 import { useNavigate } from "react-router-dom";
 

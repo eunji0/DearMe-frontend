@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import infoSrc from "../../assets/svg/angleRight.svg";
 import { getFriendAddList, deleteFri, getFriList, getFriSearch, postFriadd, username } from "../../api/api";
 import { useEffect } from 'react';
 
@@ -310,28 +309,6 @@ border-radius: 20px;
 border: none;
 `
 
-const LogBtn = styled.button`
-display: flex;
-flex-direction: row;
-justify-content: center;
-align-items: center;
-padding: 10px 15px;
-gap: 10px;
-background: ${COLORS.WHITE};
-border: 1px solid ${COLORS.Orange};
-border-radius: 20px;
-font-style: normal;
-font-weight: 700;
-font-size: 20px;
-line-height: 23px;
-color: ${COLORS.Orange};
-cursor: pointer;
-
-&:active {
-background: ${COLORS.Orange};
-color: ${COLORS.WHITE};
-}
-`
 
 const Addbox = styled.div`
 display: flex;
@@ -355,13 +332,11 @@ let myFriendFollower = "";
 const Management = () => {
   const [showRequest, setShowRequest] = useState(true); // 친구 요청 목록을 보여주는거 
   const [showList1, setShowList1] = useState(true); // 친구 찾기 목록을 보여주는거 
-  
   const [showMyFriend1, setShowMyFriendList1] = useState(true);
   const [showMyFriend2, setShowMyFriendList2] = useState(true);
   const [showMyFriend3, setShowMyFriendList3] = useState(true);
   const [showMyFriend4, setShowMyFriendList4] = useState(true);
   const [showMyFriend5, setShowMyFriendList5] = useState(true);
-
   const [addfriendname, setFriendname] = useState("");
   const [searchfriendname, searchFriendname] = useState("");
   
@@ -388,7 +363,6 @@ const Management = () => {
 
   //친구 검색의 Add
   const handleAddSearchList = async () => {
-    console.log("call handleAddSearchList");
     const response = await postFriadd(username, SearchFri);
     SearchFri = "";
     updateFriendListUI();
@@ -396,7 +370,6 @@ const Management = () => {
 
   //친구 요청의 Add
   const handleAddRequest = async () => {
-    console.log("call handleAddRequest");
     const response = await postFriadd(username, myFriendFollower);
     myFriendFollower = "";
     updateFriendListUI();
@@ -424,17 +397,7 @@ const Management = () => {
       console.error(error);
     }
   };
-  
-  /**************************************************
-  Delete 공통사항 
-  1. Delete 시 Query 전달후 목록에서 삭제하고 
-  2. 리스트를 업데이트시킴 
-  ***************************************************/
-  //친구 요청의 delete
-  //의문 -> 친구 요청이 들어옴 
-  //     -> 친구 승인을 하면 더이상 getFriendAddList 에서 해당 친구추가 요청이 들어오지 않음
-  //     -> 하지만 친구 거절을 하면 계속 getFriendAddList에서 해당 친구추가가 들어옴
-  //     -> 승인은 되는거 같은데 거절을 어케함...? 석범님에게 문의 
+
   const handleDeleteRequest = () => {
     console.log("call handleDeleteRequest");
     UpdateDeleteButtonUI();
@@ -442,27 +405,22 @@ const Management = () => {
 
   //친구 목록의 delete
   const handleDeleteList1 = () => {
-    console.log("call handleDeleteList1");
     deleteFri(username,myFriendListArr[0]);
     UpdateDeleteButtonUI();
   };
   const handleDeleteList2 = () => {
-    console.log("call handleDeleteList2");
     deleteFri(username,myFriendListArr[1]);
     UpdateDeleteButtonUI();
   };
   const handleDeleteList3 = () => {
-    console.log("call handleDeleteList3");
     deleteFri(username,myFriendListArr[2]);
     UpdateDeleteButtonUI();
   };
   const handleDeleteList4 = () => {
-    console.log("call handleDeleteList4");
     deleteFri(username,myFriendListArr[3]);
     UpdateDeleteButtonUI();
   };
   const handleDeleteList5 = () => {
-    console.log("call handleDeleteList5");
     deleteFri(username,myFriendListArr[4]);
     UpdateDeleteButtonUI();
   };
@@ -488,8 +446,7 @@ const Management = () => {
     try {
       const response = await getFriendAddList(username);
       const dataArray = response.result.data.opponent;
-      console.log(response);
-      console.log(dataArray.length);
+    
 
       for(let i=0; i<dataArray.length; i++)
       {
@@ -508,7 +465,6 @@ const Management = () => {
       const response = await getFriList(username);
       // 친구가 몇명이있는지 알아오는 코드 
       const dataArray = response.result.data.opponent;
-      // 해당 친구에 대한 리스트를 변수에 담는 과정 (최대5명까지)
       for(let i =0; i<dataArray.length; i++)
       {
           myFriendListArr[i] = dataArray[i];

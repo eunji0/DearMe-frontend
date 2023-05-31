@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import { Link } from "react-router-dom";
 
 const Layout = styled.div`
   display: flex;

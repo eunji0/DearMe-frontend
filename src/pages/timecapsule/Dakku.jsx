@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
-import infoSrc from "../../assets/svg/angleRight.svg";
-import diaryScr from "../../assets/svg/diary.svg";
 import cloudSrc from "../../assets/svg/cloud.svg";
 import calenderSrc from "../../assets/svg/calender.svg";
 import diaSrc from "../../assets/svg/dia.svg";
@@ -18,9 +16,7 @@ import settingSrc from "../../assets/svg/setting.svg";
 import starSrc from "../../assets/svg/star.svg";
 import trashSrc from "../../assets/svg/trash.svg";
 import tvSrc from "../../assets/svg/tv.svg";
-import { getDiary, postDiary, username, baseURL } from "../../api/api";
-import axios from "axios";
-
+import { getDiary, StoreDiary, username } from "../../api/api";
 
 
 const DiarybigDiv = styled.div`
@@ -77,12 +73,6 @@ width: 300px;
 height: 430px;
 background-color: ${props => props.bgColor || `${COLORS.Light_Orange}`};
 `
-const Button = styled.button`
-  width: 100px;
-  height: 40px;
-  margin-right: 10px;
-`;
-
 const Diaryimg2Div = styled.div`
 margin-top: 20px;
 display: flex;
@@ -125,16 +115,6 @@ const Imgstickers1 = styled.div`
 margine-top : 10px;
 width: 300px;
 height: 120px;
-`
- 
-const Imgstickers2 = styled.div`
-width: 90px;
-height: 90px;
-`
-
-const Imgstickers3 = styled.div`
-width: 90px;
-height: 90px;
 `
 
 
@@ -318,12 +298,6 @@ height: 50px;
 background: ${COLORS.WHITE};
 `
 
-const Diaryname2Div = styled.div`
-width: 300px;
-height: 80px;
-background: ${COLORS.WHITE};
-
-`
 const Dakkusetbuttondiv2 = styled.div`
 display: flex;
 flex-direction: row;
@@ -334,27 +308,27 @@ gap: 15px;
 width: 546px;
 height: 69px;
 `
-const Dakkusetbutton1 = styled.div`
-display: flex;
-flex-direction: row;
-align-items: center;
-padding: 15px;
-gap: 10px;
-background: #FFF8D6;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-border-radius: 18px;
-font-family: 'Roboto';
-font-style: normal;
-font-weight: 700;
-font-size: 16px;
-line-height: 19px;
-color: ${COLORS.BLACK};
 
-&:active {
-  background: ${COLORS.WHITE};
-  color: ${COLORS.Orange};
-  }
+const EditText = styled.input`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 15px;
+  gap: 15px;
+  background: ${COLORS.Light_Orange};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 18px;
+  border: none;
+  outline: none;
+  width: 120px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: ${COLORS.BLACK};
 `
+
 const Dakkusetbutton2 = styled.div`
 display: flex;
 flex-direction: row;
@@ -407,11 +381,6 @@ color: ${COLORS.BLACK};
   color: ${COLORS.Orange};
   }
 `
-const DakkusetImg = styled.img`
-width: 546px;
-height: 633px;
-justify-content: center;
-`
 const Dakkuzonediv = styled.div`
 display: flex;
 flex-direction: column;
@@ -421,21 +390,6 @@ padding: 10px;
 gap: 10px;
 width: 530px;
 height: 370px;
-`
-const DakkutimecapsuleBox = styled.div`
-display: flex;
-flex-direction: row;
-align-items: flex-start;
-padding: 10px 100px;
-gap: 10px;
-width: 535px;
-height: 43px;
-background: #FFC876;
-border-radius: 20px;
-color: white;
-font-size: 20px;
-font-weight: 700;
-justify-content: center;
 `
 const Dakkustickerline = styled.div`
 display: flex;
@@ -455,15 +409,6 @@ const DakkuPage = styled.div`
 display:flex;
 flex-direction: column;`
 
-const CheckBox = styled.div`
-  width: 25px;
-  height: 25px;
-  background-color: ${COLORS.Light_Orange};
-  
-  &:active {
-background: ${COLORS.WHITE};
-}
-  `
 
 
 
@@ -485,206 +430,180 @@ background: ${COLORS.WHITE};
     const [dmoney, setdmoney] = useState(false);
     const [dmusic, setdmusic] = useState(false);
 
-    const [showDiary1, gettitle1, getcolor1] = useState(true);
-    const [showDiary2, gettitle2, getcolor2] = useState(true);
-    const [showDiary3, gettitle3, getcolor3] = useState(true);
-  
-    const [backgroundColor, setBackgroundColor] = useState("");
+    const imageList = [dcloud,dheart,dstar,dtv,dcalender,dtrash,dlock,dkey,dsearch,dsetting,dhat,dlike,ddia,dmoney,dmusic];
+
+    // 현재 날짜를 기본값으로 
+    const [TextDate, setTextDate] = useState('');
+    // 이미지 백그라운드 색상 
+    const [backgroundColor, setBackgroundColor] = useState(COLORS.Light_Orange);
+    // 타이틀 입력값 
     const [inputText, setInputText] = useState("");
-    const maxCharacters = 12;
-    const [getInput, setGetInput] = useState('');
+
+    //상단 3개 다이어리 타이틀 이름 배열
+    const [showTitleNameArr, setshowTitleNameArr] = useState(["","",""]);
+    //상단 3개 다이어리 백그라운드 컬러 배열 
+    const [showTitleBackGroundcolorArr, setshowTitleBackGroundcolorArr] = useState([COLORS.Light_Orange,COLORS.Light_Orange,COLORS.Light_Orange]);
+    //상단 3개 다이어리 날짜 배열 
+    const [showTitleDateArr, setshowTitleDateArr] = useState(["","",""]);
+    //상단 3개 다이어리 이미지 배열
+    const [showTitleImageArr, setshowTitleImageArr] = useState(["","",""]);
+
+    // 타이틀 다이어리 UI 갱신 
+    const [showDiary1, setshowDiary1] = useState(true);
+    const [showDiary2, setshowDiary2] = useState(true);
+    const [showDiary3, setshowDiary3] = useState(true);
+    
+    // 타이틀 다이어리 이미지 로드를 위해 필요한 배열
+    const [TitleimageList1, setTitleimageList1] = useState(Array.from({ length: 15 }, () => ""));
+    const [TitleimageList2, setTitleimageList2] = useState(Array.from({ length: 15 }, () => ""));
+    const [TitleimageList3, setTitleimageList3] = useState(Array.from({ length: 15 }, () => ""));
   
+    useEffect(()=>{
+      getLoadMyDiaryList();
+      getCurrentDate();
+    }, [])
+
+    const getLoadMyDiaryList = async () => {
+      console.log("call getLoadMyDiaryList");
+      const response = await getDiary(username);
+      const dataArray = response.result.data;
+      //console.log(dataArray);
+
+      for(let i=0; i<dataArray.length; i++)
+      {
+        showTitleNameArr[i] = dataArray[i].title;
+        showTitleBackGroundcolorArr[i] = dataArray[i].color;
+        showTitleDateArr[i] = dataArray[i].date;
+        showTitleImageArr[i] = dataArray[i].imageType;
+      }
+      updateTitleDiary(dataArray);
+    };
+
+    const updateTitleDiary = (dataArray) =>
+    {
+      //UI Update시 전체 초기화 
+      for(let i=0; i<15; i++)
+      {
+        TitleimageList1[i] = "";
+        TitleimageList2[i] = "";
+        TitleimageList3[i] = "";
+      }
+
+      //전체 다이어리 3개 있는거 반복 
+      console.log(dataArray);
+      for(let i=0; i<dataArray.length; i++)
+      {
+        for(let j=0; j<3; j++)
+        {
+          if(i===0)
+          {
+            if(showTitleImageArr[i][j] === "")
+            {
+              break;
+            }
+            else
+            {
+              TitleimageList1[showTitleImageArr[i][j]] = true;
+            }
+          }
+          else if(i===1)
+          {
+            if(showTitleImageArr[i][j] === "")
+            {
+              break;
+            }
+            else
+            {
+              TitleimageList2[showTitleImageArr[i][j]] = true;
+            }
+          }
+          else if(i===2)
+          {
+            if(showTitleImageArr[i][j] === "")
+            {
+              break;
+            }
+            else
+            {
+              TitleimageList3[showTitleImageArr[i][j]] = true;
+            }
+          }
+        }
+      }
+
+      setshowDiary1(showTitleNameArr,showTitleBackGroundcolorArr,showTitleDateArr,TitleimageList1);
+      setshowDiary2(showTitleNameArr,showTitleBackGroundcolorArr,showTitleDateArr,TitleimageList2);
+      setshowDiary3(showTitleNameArr,showTitleBackGroundcolorArr,showTitleDateArr,TitleimageList3);
+    }
+
+    //현재날짜 얻어오는 함수 
+    const getCurrentDate = () => {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const currentDate = `${year}-${month}-${day}`;
+      setTextDate(currentDate);
+    };
+
+    // 색 변경 클릭했을때 호출되는 함수
     const handleButtonClick = (color) => {
       setBackgroundColor(color);
-      console.log(color);
     };
   
      //타이틀 입력 함수 
     const handleInputChange = (event) => {
       const text = event.target.value;
-      if (text.length <= maxCharacters) {
+      if (text.length <= 12) {
         setInputText(text);
       }
     };
 
-
-//다이어리 타이틀 배열
-const showTitleArr = ["","",""];
-
-//타이틀 배열에 넣기 inPutText를 어캐 넣지
-// const gettitlediary = async () => {
-//   try {
-//     const response = await getDiary(username);
-//     console.log(response)
-//     const dataArray = response.result.data.inputText;
-//     // 최대3개까지
-//     for(let i =0; i<dataArray.length; i++)
-//     {
-//       showTitleArr[i] = dataArray[i];
-//         if(i===0)
-//         {
-//           gettitle1(showTitleArr[i].text);
-//         }
-//         else if(i===1)
-//         {
-//           gettitle2(showTitleArr[i].text);
-//         }
-//         else if(i===2)
-//         {
-//           gettitle3(showTitleArr[i].text);
-//         }
-
-//         if(i==2)
-//         {
-//           break;
-//         }
-//     }
-//     console.log(showTitleArr);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-
-useEffect(()=>{
-  getDiary(username)
-  .then(data => {
-    // 데이터를 사용하는 코드 작성
-    console.log(data);
-    setGetInput(data.result.data)
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-}, [])
-
-
-const addToData = (newItem) => {
-  getInput.push(newItem);
-
-  if (getInput.length > 3) {
-    const lowestIdItemIndex = getInput.reduce((lowestIndex, item, currentIndex) => {
-      if (item.diaryId < getInput[lowestIndex].diaryId) {
-        return currentIndex;
+     //날짜 입력 함수 
+    const handleChangeDate = (event) => {
+      // 숫자와 하이푼만 입력이 가능하도록 만들어놓음
+      const text = event.target.value.replace(/[^0-9-]/g, '');
+      if(text.length <= 10)
+      {
+        setTextDate(text);
       }
-      return lowestIndex;
-    }, 0);
+    };
 
-    getInput.splice(lowestIdItemIndex, 1);
-  }
-}
+    // 생성한 다이어리 저장 
+    const BtnStoreDiary = async () => {
+      console.log("call BtnStoreDiary");
+      
+      let strImageType = "";
+      for(let i=0; i<imageList.length; i++)
+      {
+        if(imageList[i] === true)
+        {
+          strImageType += String(i);
+        }
+      }
+      
+      // 색을 선택하지 않았을때 기본값 설정
+      if(backgroundColor === "")
+      {
+        backgroundColor = "rgba(255, 248, 214, 1)";
+      }
+      
+      const JsonData = 
+      {
+        "color": backgroundColor,
+        "coordinateX": 0,
+        "coordinateY": 0,
+        "date": TextDate,
+        "imageType": strImageType,
+        "title": inputText,
+        "username": username
+      } 
 
+      const response = await StoreDiary(username,JsonData);
+      console.log(response);
+    };
 
-//다이어리 컬러 배열 backgroundColor를 어캐 넣지
-const showcolorArr = ["","",""];
-
-//컬러 배열에 넣기
-// const getcolordiary = async () => {
-//   try {
-//     const response = await getDiary(username);
-//     const dataArray = response.result.data.backgroundColor;
-//     // 최대3개까지
-//     for(let i =0; i<dataArray.length; i++)
-//     {
-//       showcolorArr[i] = dataArray[i];
-//         if(i===0)
-//         {
-//           getcolor1(showcolorArr[i].backgroundColor);
-//         }
-//         else if(i===1)
-//         {
-//           getcolor2(showcolorArr[i].backgroundColor);                                                                   
-//         }
-//         else if(i===2)
-//         {
-//           getcolor3(showcolorArr[i].backgroundColor);
-//         }
-
-//         if(i==2)
-//         {
-//           break;
-//         }
-//     }
-//     console.log(showcolorArr);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-const postDiary = async () => {
-  const newComment = 
-
-  {
-    color: backgroundColor,
-    coordinateX: 0,
-    coordinateY: 0,
-    date: "string",
-    imageType: "string",
-    title: inputText,
-    username: "wooyun"
-  }
-
-  console.log(newComment)
-  try {
-    const response = await axios.post(`${baseURL}/diary`, newComment);
-    console.log(response)
-    return response.data;
-  } catch (error) {
-    console.log(error)
-    // throw new Error(error.message);
-  }
-};
-
-
-//색, 타이틀 api전송
-// const apidiary = async()=>{
-//   try{
-//     const response = await postDiary(backgroundColor, coordinateX, coordinateY, imageType, date, inputText, username);
-//     (response.result.data);
-//     // gettitlediary();
-//     // getcolordiary();
-    
-//  } catch (error) {
-// console.error(error);
-// }
-// }
-//     const images = document.querySelectorAll('img');
-  let clickCount = 0;
   
-  // images.forEach((image) => {
-  //   image.addEventListener('click', () => {
-  //     clickCount++;
-  //     if (clickCount >= 2) {
-  //       images.forEach((img) => {
-  //         img.style.display = 'inital';
-  //       });
-  //     }
-  //   });
-  // });
-  
-  const imageList = [
-    dcloud,
-    dheart,
-    dstar,
-    dtv,
-    dcalender,
-    dtrash,
-    dlock,
-    dkey,
-    dsearch,
-    dsetting,
-    dhat,
-    dlike,
-    ddia,
-    dmoney,
-    dmusic
-    ];
-  
-  //const [selectedImage1, setSelectedImage1] = useState(null);
-  //const [selectedImage2, setSelectedImage2] = useState(null);
-  //const [selectedImage3, setSelectedImage3] = useState(null);
-  
-
-  const [selectedImages, setSelectedImages] = useState([]);
-
   // 이미지 클릭 이벤트 핸들러
   const handleImageClick = (index) => {
     
@@ -744,22 +663,13 @@ const postDiary = async () => {
     else if (index === 14)
       setdmusic(!dmusic);
 
-    //setSelectedImages((prevSelectedImages) => [...prevSelectedImages, imageList]);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(`Username: ${username}, color: ${color}, coordinateX: ${coordinateX}, coordinateY: ${coordinateY}, data: ${date}, imageType: ${imageType}, title: ${title}`);
-  };
 
   const handleResetButtonClick = () => {
-    // 페이지 초기화 코드 작성
-    window.location.reload(); // 페이지를 새로고침하여 초기화면으로 돌아갑니다.
+    window.location.reload();
   };
 
-
-
-  
     return (
       <DakkuPage>
         <form>
@@ -767,46 +677,86 @@ const postDiary = async () => {
             <DiaryBox>
             {showDiary1 && (
               <DiaryDiv>
-                <DiaryimgDiv bgColor={backgroundColor}>
+                <DiaryimgDiv bgColor={showTitleBackGroundcolorArr[0]}>
                   <DiarynameDiv>
-                  <TextOutput>{inputText}</TextOutput>
+                  <TextOutput>{showTitleNameArr[0]}</TextOutput>
+
                   <Diaryimgsticker2Div>
                       <Imgstickers1>
-                      {dcloud === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
-                      {dheart === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
-                      {dstar === true ? <img alt="star" src={starSrc} /> : <div></div>}
-                      {dtv === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
-                      {dcalender === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
-                      {dtrash === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
-                      {dlock === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
-                      {dkey === true ? <img alt="key" src={keySrc} /> : <div></div>}
-                      {dsearch === true ? <img alt="search" src={searchSrc} /> : <div></div>}
-                      {dsetting === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
-                      {dhat === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
-                      {dlike === true ? <img alt="like" src={likeSrc} /> : <div></div>}
-                      {ddia === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
-                      {dmoney === true ? <img alt="money" src={moneySrc} /> : <div></div>}
-                      {dmusic === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                      {TitleimageList1[0] === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                      {TitleimageList1[1] === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                      {TitleimageList1[2] === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                      {TitleimageList1[3] === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                      {TitleimageList1[4] === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                      {TitleimageList1[5] === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                      {TitleimageList1[6] === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                      {TitleimageList1[7] === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                      {TitleimageList1[8] === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                      {TitleimageList1[9] === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                      {TitleimageList1[10] === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                      {TitleimageList1[11] === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                      {TitleimageList1[12] === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                      {TitleimageList1[13] === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                      {TitleimageList1[14] === true ? <img alt="music" src={musicSrc} /> : <div></div>}
                       </Imgstickers1>
-                      </Diaryimgsticker2Div>
+                   </Diaryimgsticker2Div>
+                  
                   </DiarynameDiv>
                   </DiaryimgDiv>
               </DiaryDiv>
                 )}
- {showDiary2 && (
+            {showDiary2 && (
               <DiaryDiv>
-              <DiaryimgDiv bgColor={showcolorArr[1]}>
+              <DiaryimgDiv bgColor={showTitleBackGroundcolorArr[1]}>
                   <DiarynameDiv>
-                  <TextOutput>{showTitleArr[1]}</TextOutput>
+                  <TextOutput>{showTitleNameArr[1]}</TextOutput>
+                    <Diaryimgsticker2Div>
+                      <Imgstickers1>
+                      {TitleimageList2[0] === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                      {TitleimageList2[1] === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                      {TitleimageList2[2] === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                      {TitleimageList2[3] === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                      {TitleimageList2[4] === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                      {TitleimageList2[5] === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                      {TitleimageList2[6] === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                      {TitleimageList2[7] === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                      {TitleimageList2[8] === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                      {TitleimageList2[9] === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                      {TitleimageList2[10] === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                      {TitleimageList2[11] === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                      {TitleimageList2[12] === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                      {TitleimageList2[13] === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                      {TitleimageList2[14] === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                      </Imgstickers1>
+                    </Diaryimgsticker2Div>
                   </DiarynameDiv>
                 </DiaryimgDiv>
               </DiaryDiv>
- )}
-  {showDiary3 && (
+              )}
+            {showDiary3 && (
               <DiaryDiv>
-              <DiaryimgDiv bgColor={showcolorArr[2]}>
+              <DiaryimgDiv bgColor={showTitleBackGroundcolorArr[2]}>
                   <DiarynameDiv>
-                  <TextOutput>{showTitleArr[2]}</TextOutput>
+                  <TextOutput>{showTitleNameArr[2]}</TextOutput>
+                    <Diaryimgsticker2Div>
+                      <Imgstickers1>
+                      {TitleimageList3[0] === true ? <img alt="cloud" src={cloudSrc} /> : <div></div>}
+                      {TitleimageList3[1] === true ? <img alt="heart" src={heartSrc} /> : <div></div>}
+                      {TitleimageList3[2] === true ? <img alt="star" src={starSrc} /> : <div></div>}
+                      {TitleimageList3[3] === true ? <img alt="tv" src={tvSrc} /> : <div></div>}
+                      {TitleimageList3[4] === true ? <img alt="calender" src={calenderSrc} /> : <div></div>}
+                      {TitleimageList3[5] === true ? <img alt="trash" src={trashSrc} /> : <div></div>}
+                      {TitleimageList3[6] === true ? <img alt="lock" src={lockSrc} /> : <div></div>}
+                      {TitleimageList3[7] === true ? <img alt="key" src={keySrc} /> : <div></div>}
+                      {TitleimageList3[8] === true ? <img alt="search" src={searchSrc} /> : <div></div>}
+                      {TitleimageList3[9] === true ? <img alt="setting" src={settingSrc} /> : <div></div>}
+                      {TitleimageList3[10] === true ? <img alt="hat" src={hatSrc} /> : <div></div>}
+                      {TitleimageList3[11] === true ? <img alt="like" src={likeSrc} /> : <div></div>}
+                      {TitleimageList3[12] === true ? <img alt="dia" src={diaSrc} /> : <div></div>}
+                      {TitleimageList3[13] === true ? <img alt="money" src={moneySrc} /> : <div></div>}
+                      {TitleimageList3[14] === true ? <img alt="music" src={musicSrc} /> : <div></div>}
+                      </Imgstickers1>
+                    </Diaryimgsticker2Div>
                   </DiarynameDiv>
                 </DiaryimgDiv>
               </DiaryDiv>
@@ -817,7 +767,6 @@ const postDiary = async () => {
           <DakkubigDiv>
             <DiaryBox2>
               <DakkusetDiv>
-            
                 <Buttonbox>
                   <PinkColorbutton>
                     <Buttontxt onClick={() => handleButtonClick(`${COLORS.PINK}`)} ></Buttontxt>
@@ -842,7 +791,7 @@ const postDiary = async () => {
                       placeholder="다이어리 제목"
                       value={inputText}
                       onChange={handleInputChange}
-                      maxLength={maxCharacters}
+                      maxLength={12}
                     />
                     </DiarynameDiv>
                     <DiaryimgstickerDiv>
@@ -868,8 +817,8 @@ const postDiary = async () => {
               </DakkusetDiv>
               <Dakkuzonediv>
                 <DakkusetbuttonDiv>
-                  <Dakkusetbutton1>20xx.xx.xx</Dakkusetbutton1>
-                  <Dakkusetbutton2 onClick={()=>handleResetButtonClick() }>Delete</Dakkusetbutton2>
+                  <EditText type="text" value={TextDate} onChange={handleChangeDate}></EditText>
+                  <Dakkusetbutton2 onClick={()=>handleResetButtonClick() }>Reset</Dakkusetbutton2>
                 </DakkusetbuttonDiv>
                 <Dakkustickerline>
                   <Dakkusticker onClick={() => handleImageClick(0)} src={cloudSrc}></Dakkusticker>
@@ -893,8 +842,7 @@ const postDiary = async () => {
                   <Dakkusticker onClick={() => handleImageClick(14)} src={musicSrc}></Dakkusticker>
                 </Dakkustickerline>
                 <Dakkusetbuttondiv2>
-                  <Dakkusetbutton3 onClick={()=> postDiary()} >Save</Dakkusetbutton3>
-                  
+                  <Dakkusetbutton3 onClick={()=> BtnStoreDiary()} >Save</Dakkusetbutton3>
                 </Dakkusetbuttondiv2>
               </Dakkuzonediv>
             </DiaryBox2>

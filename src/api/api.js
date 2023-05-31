@@ -126,11 +126,31 @@ export const getDiary = async (username) => {
     const response = await axios.get(
       `${baseURL}/diary/${username}`
     );
-
     return response.data;
   } catch (error) {
     console.error(error);
     throw error;
+  }
+};
+
+//다이어리 저장
+export const StoreDiary = async (username, JsonData) => {
+  const newComment = 
+  {
+    color: JsonData.color,
+    coordinateX: JsonData.coordinateX,
+    coordinateY: JsonData.coordinateY,
+    date: JsonData.date,
+    imageType: JsonData.imageType,
+    title: JsonData.title,
+    username: JsonData.username
+  }
+  try {
+    const response = await axios.post(`${baseURL}/diary`, newComment);
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    console.log(error)
   }
 };
 
