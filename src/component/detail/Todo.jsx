@@ -49,37 +49,72 @@ const Todo = ({ selectedDate, onDateChange }) => {
   
 
   //todo 추가
-  const addTodoList = async (data) => {
+  // const handleAddTodo = (hour) => {
+  //   const newTodo = {
+  //     todoId: Date.now(), content: '', checkTodo: false, startTime: `${hour}:00`, endTime:`${hour+1}:00`
+  //   };
+  //   const updatedTodos = [...todos, newTodo];
+  //   setTodos(updatedTodos);
+  //   console.log("일정추가", newTodo);
+  // };
+
+  const handleAddTodo = (hour) => {
+    const newTodo = {
+      todoId: Date.now(),
+      content: '',
+      checkTodo: false,
+      startTime: `${hour}:00`,
+      endTime: `${hour + 1}:00`,
+    };
+    const updatedTodos = [...todos, newTodo];
+    setTodos(updatedTodos);
+    console.log('일정 추가', newTodo);
+  };
+  
+  const handleAddTodoList = async () => {
+    const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
+  
+    const requestData = {
+      date: selectedDate,
+      toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
+        checkTodo: todo.checkTodo,
+        content: todo.content,
+        endTime: todo.endTime,
+        startTime: todo.startTime,
+      })),
+      userName: username,
+    };
+  
     try {
-      const response = await axios.post(`http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos`, data);
+      const response = await axios.post(
+        'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos',
+        requestData
+      );
       console.log('할일 리스트 등록 성공:', response.data.result.data);
-      setTodos(response.data.result.data)
-      // 요청 성공 후 처리할 코드 작성
-      // window.location.reload()
-      // window.location.href = window.location.href;
+      setTodos(response.data.result.data);
     } catch (error) {
       console.error('할일 리스트 등록 실패:', error);
       // 요청 실패 시 처리할 코드 작성
     }
   };
+  
 
+  // const handleAddTodoList = () => {
+  //   const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
 
-  const handleAddTodoList = () => {
-    const nonEmptyTodos = tto?.filter(todo => todo.content !== '');
+  //   const requestData = {
+  //     date: selectedDate,
+  //     toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
+  //       checkTodo: todo.checked,
+  //       content: todo.content,
+  //       endTime: `${todo.hour+1}:00`, // endTime 값을 적절히 설정해야 함
+  //       startTime: `${todo.hour}:00`,
+  //     })),
+  //     userName: username,
+  //   };
 
-    const requestData = {
-      date: selectedDate,
-      toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
-        checkTodo: todo.checked,
-        content: todo.content,
-        endTime: `${todo.hour+1}:00`, // endTime 값을 적절히 설정해야 함
-        startTime: `${todo.hour}:00`,
-      })),
-      userName: username,
-    };
-
-    addTodoList(requestData);
-  };
+  //   addTodoList(requestData);
+  // };
 
   return (
     <InBox>
@@ -140,7 +175,7 @@ const Todo = ({ selectedDate, onDateChange }) => {
       </TodayBox>
       <SaveDiv>
         <SBtn type='submit'
-          // onClick={handleAddTodoList}
+          onClick={handleAddTodoList}
         >
           <SaveFont>Save</SaveFont>
         </SBtn>
