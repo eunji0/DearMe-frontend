@@ -3,7 +3,8 @@ import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import closeSrc from "../../assets/svg/close.svg";
 import axios from "axios";
-import { username } from "../../api/api";
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
 
 const Layout = styled.div`
 display: flex;
@@ -113,6 +114,9 @@ const WriteTime = ({ onClose }) => {
   const [toDay, setToDay] = useState('');
   const [nextDay, setNextDay] = useState('');
   const [content, setContent] = useState('')
+  const username = "string11";
+
+  console.log(username)
 
   const handleChange = (event) => {
     const inputDate = event.target.value;

@@ -4,10 +4,12 @@ import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
 import backSrc from "../../assets/svg/back.svg";
-import { getTimecapsules, username, fetchTodoList2 } from "../../api/api";
+import { fetchTodoList2 } from "../../api/api";
 import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
 import Todo from "../../component/detail/Todo";
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
 
 const InBox = styled.div`
 display: flex;
@@ -213,18 +215,19 @@ border-radius: 10px;
 `
 
 
-const DetailPage = ({ onClose, selectedDayId, diaryData, selectedDate, onDateChange }) => {
+const DetailPage = ({ username, onClose, selectedDayId, diaryData, selectedDate, onDateChange }) => {
   const selectedData = diaryData.find((item) => item?.dayId === selectedDayId) || null;
-
+  // const username = useRecoilValue(usernameState);
   const [dd, setDD] = useState('');
-  console.log(selectedDate)
+
   const [yearStr, monthStr, dayStr] = selectedDate.split('-').map(Number);
   //목록가져오기
     const fetchData = async () => {
       const todos = await fetchTodoList2(username, yearStr, monthStr, dayStr);
-      console.log(todos.today)
-      console.log(todos)
+     
+      if(todos !==null){
       setDD(todos.today)
+      }
     };
 
     fetchData();

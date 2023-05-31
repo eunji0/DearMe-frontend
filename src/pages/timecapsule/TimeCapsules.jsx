@@ -3,7 +3,9 @@ import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import pencilSrc from "../../assets/svg/pencil.svg";
 import WriteTime from "../../component/modal/WriteTime";
-import { getTimecapsules, username, deleteTimeCapsule } from "../../api/api";
+import { getTimecapsules, deleteTimeCapsule } from "../../api/api";
+import { useRecoilValue } from "recoil";
+import { usernameState } from "../../atoms/atoms";
 
 
 const Layout = styled.div`
@@ -166,12 +168,14 @@ const ModalWrapper = styled.div`
 const TimeCapsules = () => {
   const [showModal, setShowModal] = useState(false);
   const [indata, setInDate] = useState([]);
+  const username = "string11";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getTimecapsules(username);
         setInDate(data);
+        console.log(data)
       } catch (error) {
         console.error(error);
       }

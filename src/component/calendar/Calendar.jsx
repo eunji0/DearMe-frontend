@@ -4,6 +4,8 @@ import COLORS from '../../assets/styles/colors';
 import DetailPage from '../../pages/detail/DetailPage';
 import { fetchSchedule } from '../../api/api';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { usernameState } from '../../atoms/atoms';
 
 const HourBox = styled.td`
   display: flex;
@@ -66,12 +68,13 @@ const SlidePage = styled.div`
   transition: right 0.3s ease-in-out;
 `;
 
-const Calendar = ({ diaryData, dates }) => {
+const Calendar = ({ diaryData, dates, username }) => {
   const [detailOn, setDetailOn] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  // const username = useRecoilValue(usernameState);
 
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
@@ -89,12 +92,8 @@ const Calendar = ({ diaryData, dates }) => {
     setSelectedDayId(dayId);
     setSelectedDate(formattedDates[index]);
 
-        // URL 업데이트
-        const params = new URLSearchParams();
-        params.set('q', selectedDate);
-        const newUrl = `/%E2%80%8B/timeschedule%E2%80%8B/%7BuserName%7D%E2%80%8B/%7Byear%7D%E2%80%8B/%7Bmonth%7D%E2%80%8B/%7Bday%7D?${params.toString()}`;
-        navigate(newUrl, { replace: true });
   };
+
 
   return (
     <All>
@@ -105,7 +104,7 @@ const Calendar = ({ diaryData, dates }) => {
               <HourBox style={{ flex: 1, textAlign: 'center' }}>
                 {hour}:00
               </HourBox>
-              {diaryData.map((item, index) => {
+              {diaryData?.map((item, index) => {
                 const todos = item && item.toDo.filter((todo) => {
                   const startHour = parseInt(todo.startTime.slice(0, 2));
                   const endHour = parseInt(todo.endTime.slice(0, 2));
@@ -133,6 +132,7 @@ const Calendar = ({ diaryData, dates }) => {
       {detailOn && (
         <SlidePage open={detailOn} className={detailOn ? 'slide-in' : 'slide-out'}>
           <DetailPage
+          username={username}
             diaryData={diaryData}
             selectedDayId={selectedDayId || null}
             selectedDate={selectedDate}

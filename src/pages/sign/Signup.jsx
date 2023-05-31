@@ -238,7 +238,7 @@ const Signup = () => {
   
       console.log(response);
   
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error(error);
     }

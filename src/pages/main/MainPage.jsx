@@ -4,9 +4,8 @@ import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/mainLeft.svg";
 import rightSrc from "../../assets/svg/mainRight.svg";
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import DetailPage from "../detail/DetailPage";
-import { username, fetchTimeSchedule, fetchSchedule } from "../../api/api";
+import { useNavigate} from 'react-router-dom';
+import { fetchSchedule } from "../../api/api";
 import Calendar from "../../component/calendar/Calendar";
 
 const TitleBox = styled.div`
@@ -111,6 +110,16 @@ const MainPage = () => {
   const containerRef = useRef(null);
   const [diaryData, setDiaryData] = useState([]);
   const [dates, setDates] = useState([]); // 추가: dates 상태 변수
+  const getCurrentUsername = () => {
+    const url = new URL(window.location.href);
+    const pathname = url.pathname;
+    const parts = pathname.split('/');
+    const username = parts[2];
+    return username;
+  };
+  
+  const username = getCurrentUsername();
+
 
   useEffect(() => {
     const calculateWeeklyDates = () => {
@@ -147,19 +156,44 @@ const MainPage = () => {
 
   const scrollContainerHeight = Math.floor((window.innerHeight * 3) / 4);
 
+  // const goToWeek = (offset) => {
+  //   const newWeekStartDate = new Date(weeklyDates[0]);
+  //   newWeekStartDate.setDate(newWeekStartDate.getDate() + offset * 7);
+
+  //   const newWeekDates = [];
+  //   let currentDay = new Date(newWeekStartDate);
+  //   for (let i = 0; i < 7; i++) {
+  //     newWeekDates.push(new Date(currentDay));
+  //     currentDay.setDate(currentDay.getDate() + 1);
+  //   }
+
+  //   setWeeklyDates(newWeekDates);
+  //   setDates(newWeekDates);
+  // };
   const goToWeek = (offset) => {
     const newWeekStartDate = new Date(weeklyDates[0]);
     newWeekStartDate.setDate(newWeekStartDate.getDate() + offset * 7);
-
+  
     const newWeekDates = [];
     let currentDay = new Date(newWeekStartDate);
     for (let i = 0; i < 7; i++) {
       newWeekDates.push(new Date(currentDay));
       currentDay.setDate(currentDay.getDate() + 1);
     }
-
+  
     setWeeklyDates(newWeekDates);
     setDates(newWeekDates);
+  
+    const navigate = useNavigate();
+    const url = new URL(window.location.href);
+    const parts = url.pathname.split('/');
+    const username = parts[2];
+    let year = newWeekDates[0].getFullYear();
+    let month = newWeekDates[0].getMonth() + 1;
+    let day = newWeekDates[0].getDate();
+  
+    const newUrl = `/timeschedule/${username}/${year}/${month}/${day}`;
+    navigate(newUrl);
   };
 
   useEffect(() => {
@@ -179,7 +213,7 @@ const MainPage = () => {
       const fetchData = async () => {
         try {
           const schedule = await fetchSchedule(username, year, month, day);
-
+          console.log(username)
           setDiaryData(schedule.result.data);
         } catch (error) {
           // 오류 처리
@@ -217,11 +251,12 @@ const MainPage = () => {
         ))}
       </WeekLayout>
 
+
       <div style={{ overflowY: 'scroll', height: `${scrollContainerHeight}px` }} ref={containerRef}>
         <div>
 
-          <Calendar diaryData={diaryData} 
-          dates={dates}
+          <Calendar username={username} diaryData={diaryData}
+            dates={dates}
           />
         </div>
       </div>

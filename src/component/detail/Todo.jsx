@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import COLORS from '../../assets/styles/colors';
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
-import { username, fetchTodoList, deleteTodo} from "../../api/api";
+import { fetchTodoList, deleteTodo} from "../../api/api";
 import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
 import axios from 'axios';
+import { useRecoilValue } from 'recoil';
+import { usernameState } from '../../atoms/atoms';
 
 const Todo = ({ selectedDate, selectedData, onDateChange }) => {
   // console.log(selectedData)
@@ -18,17 +20,28 @@ const Todo = ({ selectedDate, selectedData, onDateChange }) => {
   const [yearStr, monthStr, dayStr] = selectedDate.split('-').map(Number);
   const hours = Array.from(Array(24).keys());
   const [dd, setDD] = useState('');
+  const getCurrentUsername = () => {
+    const url = new URL(window.location.href);
+    const pathname = url.pathname;
+    const parts = pathname.split('/');
+    const username = parts[2];
+    return username;
+  };
+  
+  const username = getCurrentUsername();
+
+  // console.log(username)
   //목록가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      const todos = await fetchTodoList(username, yearStr, monthStr, dayStr);
-      setTodos([])
-      setTodos(todos);
-    };
-  
-    fetchData();
-  }, []);
-  
+  const fetchData = async () => {
+    const todos = await fetchTodoList(username, yearStr, monthStr, dayStr);
+    console.log(todos)
+    setTodos(todos);
+  };
+
+  fetchData();
+}, []);
+
 
     // 컴포넌트가 마운트되었을 때 스크롤 위치를 조정
     useEffect(() => {
@@ -45,10 +58,6 @@ const Todo = ({ selectedDate, selectedData, onDateChange }) => {
 
   
   //삭제
-  // const handleDeleteTodo = (hour, id) => {
-  //   const updatedTodos = todos.filter((todo) => todo.startTime === `${hour}:00` && todo.todoId !== id);
-  //   setTodos(updatedTodos);
-  // };
   const handleDeleteTodo = async (id) => {
     await deleteTodo(id);
     // 삭제 요청이 성공한 경우에만 해당 일정을 todos에서 제거하도록 처리할 수 있습니다.
@@ -69,47 +78,12 @@ const Todo = ({ selectedDate, selectedData, onDateChange }) => {
     setTodos(updatedTodos);
     console.log('일정 추가', newTodo);
   };
-  
-  
-  // const handleAddTodoList = async () => {
-  //   const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
-  
-  //   const requestData = {
-  //     date: selectedDate,
-  //     toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
-  //       checkTodo: todo.checkTodo,
-  //       content: todo.content,
-  //       endTime: todo.endTime,
-  //       startTime: todo.startTime,
-  //     })),
-  //     userName: username,
-  //   };
-  
-  //   try {
-  //     const response = await axios.post(
-  //       'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos',
-  //       requestData
-  //     );
-  //     console.log('할일 리스트 등록 성공:', response.data.result.data);
-  //     console.log('할일 번호', response.data.result)
-  //     setTodos([]);
-  //     // if (todos.length === 0) {
-  //     //   setTodos([]);
-  //     //   setTodos(response.data.result.data);
-  //     // }
-  //     window.location.reload();
-  //     setTodos(response.data.result.data);
-  //   } catch (error) {
-  //     console.error('할일 리스트 등록 실패:', error);
-  //     // 요청 실패 시 처리할 코드 작성
-  //   }
-  // };
+
 
   const handleAddTodoList = async () => {
     const newTodos = todos.filter(todo => todo.content !== ''); // 빈 내용이 아닌 새로운 할일 목록 추출
   
     if (newTodos.length === 0) {
-      // 새로운 할일 목록이 없으면 반환하거나 예외 처리를 진행할 수 있습니다.
       console.log('새로운 할일 목록이 없습니다.');
       return;
     }
