@@ -8,23 +8,32 @@ import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
 import axios from 'axios';
 
-const Todo = ({ selectedDate, onDateChange }) => {
+const Todo = ({ selectedDate, selectedData, onDateChange }) => {
+  // console.log(selectedData)
   const todayBoxRef = useRef(null);
   const [todos, setTodos] = useState([
     {todoId: 0, content: '', checkTodo: false, startTime: 9, endTime: 10 }
   ]);
+  // const [yearStr, monthStr, dayStr] = selectedData.date.split('-').map(Number);
   const [yearStr, monthStr, dayStr] = selectedDate.split('-').map(Number);
   const hours = Array.from(Array(24).keys());
-
+  const [dd, setDD] = useState('');
   //목록가져오기
   useEffect(() => {
     const fetchData = async () => {
       const todos = await fetchTodoList(username, yearStr, monthStr, dayStr);
+      setTodos([])
       setTodos(todos);
     };
   
     fetchData();
   }, []);
+  
+
+    // 컴포넌트가 마운트되었을 때 스크롤 위치를 조정
+    useEffect(() => {
+      todayBoxRef.current.scrollTo(0, 9 * 89); // 9:00 위치로 스크롤 (각 ContentBox의 높이가 20px로 가정)
+    }, []);
 
   //내용변경
   const handleContentChange = (todoId, content, checked) => {
@@ -34,7 +43,6 @@ const Todo = ({ selectedDate, onDateChange }) => {
     setTodos(updatedTodos);
   };
 
-  console.log(todos)
   
   //삭제
   // const handleDeleteTodo = (hour, id) => {
@@ -49,15 +57,6 @@ const Todo = ({ selectedDate, onDateChange }) => {
   
 
   //todo 추가
-  // const handleAddTodo = (hour) => {
-  //   const newTodo = {
-  //     todoId: Date.now(), content: '', checkTodo: false, startTime: `${hour}:00`, endTime:`${hour+1}:00`
-  //   };
-  //   const updatedTodos = [...todos, newTodo];
-  //   setTodos(updatedTodos);
-  //   console.log("일정추가", newTodo);
-  // };
-
   const handleAddTodo = (hour) => {
     const newTodo = {
       todoId: Date.now(),
@@ -71,12 +70,52 @@ const Todo = ({ selectedDate, onDateChange }) => {
     console.log('일정 추가', newTodo);
   };
   
-  const handleAddTodoList = async () => {
-    const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
   
+  // const handleAddTodoList = async () => {
+  //   const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
+  
+  //   const requestData = {
+  //     date: selectedDate,
+  //     toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
+  //       checkTodo: todo.checkTodo,
+  //       content: todo.content,
+  //       endTime: todo.endTime,
+  //       startTime: todo.startTime,
+  //     })),
+  //     userName: username,
+  //   };
+  
+  //   try {
+  //     const response = await axios.post(
+  //       'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos',
+  //       requestData
+  //     );
+  //     console.log('할일 리스트 등록 성공:', response.data.result.data);
+  //     console.log('할일 번호', response.data.result)
+  //     setTodos([]);
+  //     // if (todos.length === 0) {
+  //     //   setTodos([]);
+  //     //   setTodos(response.data.result.data);
+  //     // }
+  //     window.location.reload();
+  //     setTodos(response.data.result.data);
+  //   } catch (error) {
+  //     console.error('할일 리스트 등록 실패:', error);
+  //     // 요청 실패 시 처리할 코드 작성
+  //   }
+  // };
+
+  const handleAddTodoList = async () => {
+    const newTodos = todos.filter(todo => todo.content !== ''); // 빈 내용이 아닌 새로운 할일 목록 추출
+  
+    if (newTodos.length === 0) {
+      // 새로운 할일 목록이 없으면 반환하거나 예외 처리를 진행할 수 있습니다.
+      console.log('새로운 할일 목록이 없습니다.');
+      return;
+    }
     const requestData = {
       date: selectedDate,
-      toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
+      toDoScheduleRequestList: newTodos.map(todo => ({
         checkTodo: todo.checkTodo,
         content: todo.content,
         endTime: todo.endTime,
@@ -85,36 +124,40 @@ const Todo = ({ selectedDate, onDateChange }) => {
       userName: username,
     };
   
+  
     try {
       const response = await axios.post(
         'http://prod-dearme-api.ap-northeast-2.elasticbeanstalk.com:80/timeschedule/todos',
         requestData
       );
       console.log('할일 리스트 등록 성공:', response.data.result.data);
-      setTodos(response.data.result.data);
+    window.location.reload();
     } catch (error) {
       console.error('할일 리스트 등록 실패:', error);
       // 요청 실패 시 처리할 코드 작성
     }
   };
   
+  
+  const handlePrevDay = () => {
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const prevDate = new Date(year, month - 1, day - 1);
+    const formattedDate = `${prevDate.getFullYear()}-${(prevDate.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${prevDate.getDate().toString().padStart(2, '0')}`;
+    onDateChange(formattedDate);
+    setTodos([])
+  };
 
-  // const handleAddTodoList = () => {
-  //   const nonEmptyTodos = todos?.filter(todo => todo.content !== '');
-
-  //   const requestData = {
-  //     date: selectedDate,
-  //     toDoScheduleRequestList: nonEmptyTodos.map(todo => ({
-  //       checkTodo: todo.checked,
-  //       content: todo.content,
-  //       endTime: `${todo.hour+1}:00`, // endTime 값을 적절히 설정해야 함
-  //       startTime: `${todo.hour}:00`,
-  //     })),
-  //     userName: username,
-  //   };
-
-  //   addTodoList(requestData);
-  // };
+  const handleNextDay = () => {
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const nextDate = new Date(year, month - 1, day + 1);
+    const formattedDate = `${nextDate.getFullYear()}-${(nextDate.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${nextDate.getDate().toString().padStart(2, '0')}`;
+      onDateChange(formattedDate);
+      setTodos([])
+  };
 
   return (
     <InBox>
@@ -129,8 +172,8 @@ const Todo = ({ selectedDate, onDateChange }) => {
         )}
         <ButtonBox>
 
-          <img alt="left" src={leftSrc} />
-          <img alt="right" src={rightSrc} />
+          <img alt="left" src={leftSrc} onClick={handlePrevDay}/>
+          <img alt="right" src={rightSrc} onClick={handleNextDay}/>
         </ButtonBox>
       </MidLayout>
 
@@ -195,17 +238,6 @@ width: 100%;
 border-left: 1px solid ${COLORS.Orange};
 `
 
-const All = styled.div`
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-align-items: flex-start;
-padding: 20px;
-position: relative;
-background-color: ${COLORS.Orange};
-width: 705px;
-height: 100%;`
-
 
 const TxtBox = styled.div`
 display: flex;
@@ -222,12 +254,6 @@ font-size: 16px;
 line-height: 19px;
 color: ${COLORS.BLACK};`
 
-const TxtDiv = styled.div`
-font-style: normal;
-font-weight: 600;
-font-size: 16px;
-line-height: 19px;
-color: ${COLORS.BLACK};`
 
 const TodayBox = styled.div`
 width: 100%;
@@ -246,12 +272,6 @@ font-size: 12px;
 line-height: 14px;
 color: ${COLORS.BLACK};`
 
-const InTxt = styled.div`
-font-style: normal;
-font-weight: 400;
-font-size: 12px;
-line-height: 14px;
-color: ${COLORS.BLACK};`
 
 const MidLayout = styled.div`
 display: flex;

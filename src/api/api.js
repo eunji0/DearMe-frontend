@@ -87,6 +87,17 @@ export const fetchTodoList = async (username, yearStr, monthStr, dayStr) => {
   }
 };
 
+export const fetchTodoList2 = async (username, yearStr, monthStr, dayStr) => {
+  try {
+    const requestUrl = `${baseURL}/timeschedule/search/${username}/${parseInt(yearStr)}/${parseInt(monthStr)}/${parseInt(dayStr)}`;
+    const response = await axios.get(requestUrl);
+    return response.data.result.data;
+  } catch (error) {
+    console.error('Failed to fetch todo list:', error);
+    return [];
+  }
+};
+
 //스케줄 날짜 등록
 export const addSchedule = async (selectedDate) => {
   try {

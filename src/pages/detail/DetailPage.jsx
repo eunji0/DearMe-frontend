@@ -4,7 +4,7 @@ import COLORS from "../../assets/styles/colors";
 import leftSrc from "../../assets/svg/left.svg";
 import rightSrc from "../../assets/svg/right.svg";
 import backSrc from "../../assets/svg/back.svg";
-import { getTimecapsules, username } from "../../api/api";
+import { getTimecapsules, username, fetchTodoList2 } from "../../api/api";
 import plusSrc from "../../assets/svg/plus.svg";
 import minusSrc from "../../assets/svg/minus.svg";
 import Todo from "../../component/detail/Todo";
@@ -216,7 +216,19 @@ border-radius: 10px;
 const DetailPage = ({ onClose, selectedDayId, diaryData, selectedDate, onDateChange }) => {
   const selectedData = diaryData.find((item) => item?.dayId === selectedDayId) || null;
 
+  const [dd, setDD] = useState('');
+  console.log(selectedDate)
+  const [yearStr, monthStr, dayStr] = selectedDate.split('-').map(Number);
+  //목록가져오기
+    const fetchData = async () => {
+      const todos = await fetchTodoList2(username, yearStr, monthStr, dayStr);
+      console.log(todos.today)
+      console.log(todos)
+      setDD(todos.today)
+    };
 
+    fetchData();
+  
 	return (
 		<All>
 			<img style={{width:"25px", height:"25px"}} alt="back" src={backSrc} onClick={onClose} />
@@ -226,8 +238,8 @@ const DetailPage = ({ onClose, selectedDayId, diaryData, selectedDate, onDateCha
 				</TxtBox>
 				<TodayBox>
 					<InTxt>
-						{selectedData ? (
-							<div>{selectedData.today}</div>
+						{dd ? (
+							<div>{dd}</div>
 						) : (
 							<div>오늘의 나에게 온 말이 없습니다</div>
 						)}
@@ -235,7 +247,7 @@ const DetailPage = ({ onClose, selectedDayId, diaryData, selectedDate, onDateCha
 				</TodayBox>
 			</InBox>
 
-			<Todo onDateChange={onDateChange} selectedDate={selectedDate} selectedDayId={selectedDayId} diaryData={diaryData}/>
+			<Todo onDateChange={onDateChange} selectedData={selectedData} selectedDate={selectedDate} selectedDayId={selectedDayId} diaryData={diaryData}/>
 			
 			{/* <SaveDiv>
 				<SBtn>

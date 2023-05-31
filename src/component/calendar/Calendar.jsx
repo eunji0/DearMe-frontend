@@ -96,8 +96,6 @@ const Calendar = ({ diaryData, dates }) => {
         navigate(newUrl, { replace: true });
   };
 
-  console.log(diaryData)
-
   return (
     <All>
       <table>
