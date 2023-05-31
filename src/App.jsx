@@ -1,8 +1,6 @@
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
-import './App.css'
-import MainPage from './pages/main/MainPage';
+import MainPage from './pages/main/MainPage.jsx';
 import GlobalStyled from './assets/styles/GlobalStyled';
-
 import  Header from './component/header/Header';
 import  Signup  from './pages/sign/Signup';
 import {Login} from './pages/sign/Login';
@@ -13,6 +11,8 @@ import Noticed from './pages/mypage/Noticed';
 import SideBar from './component/SideBar';
 import Profile from './pages/mypage/Profile';
 import Management from './pages/mypage/Management';
+import Header from './component/header/Header';
+import Signup from './pages/sign/Signup';
 
 function App() {
 
@@ -46,10 +46,10 @@ function App() {
 export default App;
 
 const MypageLayout = () => {
-  return (
-    <div style={{display: "flex", flexDirection:"row"}}>
-      <SideBar />
-          {<Outlet />}
-    </div>
-  )
+	return (
+		<div style={{ display: "flex", flexDirection: "row" }}>
+			<SideBar />
+			{<Outlet />}
+		</div>
+	)
 }

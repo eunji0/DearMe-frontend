@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import COLORS from "../../assets/styles/colors";
 import infoSrc from "../../assets/svg/angleRight.svg";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../api/api";
 
 const SignBox = styled.div`
 display: flex;
@@ -153,7 +156,7 @@ const CheckBox = styled.input`
   }
 `;
 
-const SignBtn = styled.div`
+const SignBtn = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: center;
@@ -176,27 +179,108 @@ color: ${COLORS.WHITE};
 }
 `
 
-const OkBtn = styled.button`
-
-`
-
-
 const Signup = () => {
-
-  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [number, setNumber] = useState("");
+  const [phone, setPhone] = useState("");
+  const [allAgreed, setAllAgreed] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Username: ${username}, Password: ${password}`);
+
+    if (password !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다");
+      return;
+    }
+
+    if (!emailIsValid(email)) {
+      alert("올바른 이메일 형식이 아닙니다");
+      return;
+    }
+
+    if (password.length < 8) {
+      alert("비밀번호는 최소 8자 이상이어야 합니다");
+      return;
+    }
+
+    if (!phoneIsValid(phone)) {
+      alert("올바른 전화번호 형식이 아닙니다");
+      return;
+    }
+
+    if (username.length < 4) {
+      alert("아이디는 최소 4자 이상이어야 합니다");
+      return;
+    }
+
+    if (phone.length < 7) {
+      alert("올바른 전화번호 형식이 아닙니다.");
+      return;
+    }
+
+    if (!allAgreed) {
+      alert("이용약관을 동의해주세요.");
+      return;
+    }
+
+    try {
+      const response = await registerUser({
+        email: email,
+        password: password,
+        phone: phone,
+        username: username,
+      });
+  
+      console.log(response);
+  
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  const emailIsValid = (email) => {
+    // Simple email validation using regular expression
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
+  const phoneIsValid = (phone) => {
+    // Phone validation: allows only digits and optional + at the start
+    return /^\+?\d*$/.test(phone);
+  };
+
+  //동의
+  const handleAllAgreedChange = (e) => {
+    const isChecked = e.target.checked;
+    setAllAgreed(isChecked);
+    setTermsAgreed(isChecked);
+    setPrivacyAgreed(isChecked);
+  };
+
+  const handleTermsAgreedChange = (e) => {
+    setTermsAgreed(e.target.checked);
+  };
+
+  const handlePrivacyAgreedChange = (e) => {
+    setPrivacyAgreed(e.target.checked);
+  };
+
+  useEffect(() => {
+    if (termsAgreed && privacyAgreed) {
+      setAllAgreed(true);
+    } else {
+      setAllAgreed(false);
+    }
+  }, [termsAgreed, privacyAgreed]);
+  
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <SignBox>
           <SignDiv>
             <TxtDiv>회원가입</TxtDiv>
@@ -208,9 +292,10 @@ const Signup = () => {
               <TitleBox>아이디 :</TitleBox>
               <InBox
                 type="text"
-                id="userId"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)} />
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </InnerBox>
             <InnerBox>
               <TitleBox>비밀번호 :</TitleBox>
@@ -218,49 +303,80 @@ const Signup = () => {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} />
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </InnerBox>
+            <InnerBox>
+              <TitleBox>비밀번호 확인:</TitleBox>
+              <InBox
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </InnerBox>
+          
             <InnerBox>
               <TitleBox>이메일 :</TitleBox>
               <InBox
                 type="text"
                 id="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} />
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </InnerBox>
             <InnerBox>
               <TitleBox>전화번호 :</TitleBox>
               <InBox
-                type="number"
-                id="number"
-                value={number}
-                onChange={(e) => setNumber(e.target.value)} />
+                type="tel"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
             </InnerBox>
           </InputLayout>
         </InputBox>
         <AgreeLayout>
           <AgreeBox>
             <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
+              <CheckBox
+                type="checkbox"
+                checked={allAgreed}
+                onChange={handleAllAgreedChange}
+              />
               모두 동의합니다.
             </AgreeTxt>
             <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
+              <CheckBox
+                type="checkbox"
+                checked={termsAgreed}
+                onChange={handleTermsAgreedChange}
+              />
               이용약관 동의
+<<<<<<< HEAD
               <img alt="이용약관 동의" 
                />
+=======
+              <img alt="이용약관 동의" src={infoSrc} />
+>>>>>>> af1386d14d8699e63f94feee82d7fc69b9cece99
             </AgreeTxt>
             <AgreeTxt fontSize="20px">
-              <CheckBox type="checkbox"/>
+              <CheckBox
+                type="checkbox"
+                checked={privacyAgreed}
+                onChange={handlePrivacyAgreedChange}
+              />
               개인정보 취급방침 동의
-              <img alt="개인정보 취급방침 동의" src={infoSrc}/>
+              <img alt="개인정보 취급방침 동의" src={infoSrc} />
             </AgreeTxt>
           </AgreeBox>
-          <SignBtn type="submit"  onSubmit={handleSubmit}>회원가입</SignBtn>
+          <SignBtn type="submit" onSubmit={handleSubmit}>
+            회원가입
+          </SignBtn>
         </AgreeLayout>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default Signup;
